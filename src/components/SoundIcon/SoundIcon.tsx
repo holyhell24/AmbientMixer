@@ -21,7 +21,7 @@ import type { IconType } from 'react-icons';
 import { SoundIconName } from '../../types';
 import type { SoundIconProps } from './types';
 
-const soundIcons: Record<SoundIconProps['name'], IconType> = {
+const soundIcons: Record<SoundIconName, IconType> = {
   [SoundIconName.Air]: FiWind,
   [SoundIconName.Bell]: FiBell,
   [SoundIconName.Bolt]: FiZap,
@@ -48,7 +48,7 @@ const soundIcons: Record<SoundIconProps['name'], IconType> = {
 function SoundIcon({ name }: SoundIconProps) {
   const Icon = soundIcons[name];
 
-  return <Icon aria-hidden="true" className="sound-icon" />;
+  return <Icon aria-hidden="true" className="block h-[1.08em] w-[1.08em]" />;
 }
 
 export default SoundIcon;

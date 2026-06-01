@@ -6,7 +6,6 @@ import SoundGrid from "./components/SoundGrid";
 import TransportControls from "./components/TransportControls";
 import presetData from "./presets.json";
 import { categoryLabels, sounds } from "./soundLibrary";
-import { appStyles } from "./styles";
 import { SoundCategory } from "./types";
 import type {
   PresetFile,
@@ -275,24 +274,22 @@ function App() {
   };
 
   return (
-    <>
-      <style>{appStyles}</style>
-      <main className="app">
-        <section className="app__intro" aria-labelledby="app-title">
-          <h1 className="app__title" id="app-title">
+      <main className="mx-auto min-h-svh w-[min(880px,calc(100%-32px))] px-0 py-16 text-[#f8f7fb] max-[640px]:w-[min(100%-12px,880px)] max-[640px]:pt-8">
+        <section className="grid justify-items-center pb-16 text-center max-[640px]:pb-12" aria-labelledby="app-title">
+          <h1 className="m-0 font-serif text-[clamp(2.2rem,7vw,4rem)] leading-none tracking-normal text-white [text-shadow:0_2px_0_rgba(46,76,113,0.8)]" id="app-title">
             Ambient Sounds
           </h1>
-          <p className="app__subtitle">For Focus and Calm</p>
-          <span className="app__count">{sounds.length} sounds</span>
+          <p className="mt-1 mb-5 font-serif text-[clamp(1.45rem,4vw,2.1rem)] font-black tracking-normal text-[#9c98a5]">For Focus and Calm</p>
+          <span className="inline-flex min-h-[30px] items-center rounded-full border border-white/15 bg-white/[0.04] px-3.5 text-sm capitalize text-[#c9cedc]">{sounds.length} sounds</span>
         </section>
 
-        <aside className="app__mixer" aria-label="Mixer channels">
-          <div className="app__mixer-heading">
-            <h2 className="app__section-title">Mixer</h2>
+        <aside className="mb-6 -mt-7 overflow-hidden rounded-lg border border-[#9acae0]/20 bg-[linear-gradient(180deg,rgba(154,202,224,0.08),rgba(255,255,255,0.025)),rgba(18,20,25,0.88)] shadow-[0_24px_70px_rgba(0,0,0,0.36)]" aria-label="Mixer channels">
+          <div className="flex items-center justify-between gap-3.5 border-b border-white/10 px-4.5 py-4 text-[#a5a2ad]">
+            <h2 className="m-0 font-serif text-2xl tracking-normal text-white">Mixer</h2>
             <span>{activeTracks.length} active</span>
           </div>
           {activeSounds.length > 0 ? (
-            <div className="app__channels">
+            <div className="grid grid-cols-[repeat(auto-fit,minmax(112px,1fr))] gap-2.5 p-2.5">
               {activeSounds.map((sound) => {
                 const track = tracks.find(
                   (currentTrack) => currentTrack.id === sound.id,
@@ -324,13 +321,13 @@ function App() {
               })}
             </div>
           ) : (
-            <p className="app__empty">
+            <p className="m-0 p-7 text-center text-[#9c98a5]">
               Choose a sound card to add it to the mix.
             </p>
           )}
         </aside>
 
-        <section className="app__transport" aria-label="Playback controls">
+        <section className="relative mb-8 mt-3 grid justify-items-center max-[640px]:mb-7 max-[640px]:mt-2" aria-label="Playback controls">
           <TransportControls
             activeCount={activeTracks.length}
             isPlaying={isPlaying}
@@ -348,17 +345,17 @@ function App() {
           onSavePreset={savePreset}
         />
 
-        <section className="app__categories" aria-label="Categories">
-          <h2 className="app__section-title">Categories</h2>
+        <section className="grid gap-4.5 justify-items-center" aria-label="Categories">
+          <h2 className="m-0 font-serif text-[clamp(1.65rem,4vw,2.15rem)] tracking-normal text-white">Categories</h2>
           <CategoryFilter
             activeCategory={selectedCategory}
             onSelectCategory={setSelectedCategory}
           />
         </section>
 
-        <section className="app__library" aria-labelledby="library-title">
-          <div className="app__library-heading">
-            <h2 className="app__section-title" id="library-title">
+        <section className="mt-8 grid gap-5.5 justify-items-center" aria-labelledby="library-title">
+          <div className="grid justify-items-center gap-3">
+            <h2 className="m-0 font-serif text-[clamp(1.65rem,4vw,2.15rem)] tracking-normal text-white" id="library-title">
               {categoryLabels[selectedCategory]}
             </h2>
           </div>
@@ -370,7 +367,6 @@ function App() {
           />
         </section>
       </main>
-    </>
   );
 }
 
