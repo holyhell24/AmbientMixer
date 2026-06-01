@@ -74,6 +74,10 @@ function App() {
   const presetCategories = getPresetCategories(presets);
 
   useEffect(() => {
+    if (!isPlaying && audioRefs.current.size === 0) {
+      return;
+    }
+
     const audioContext = audioContextRef.current ?? new AudioContext();
     audioContextRef.current = audioContext;
 

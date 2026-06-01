@@ -270,7 +270,7 @@ export const getAudio = (
 
   const audio = new Audio(sound.src);
   audio.loop = true;
-  audio.preload = 'auto';
+  audio.preload = 'metadata';
   audioRefs.set(sound.id, audio);
 
   return audio;
@@ -356,10 +356,26 @@ export const syncTrackAudio = ({
 }) => {
   clearRandomReplayTimeouts(randomReplayTimeoutRefs);
 
+  if (isPlaying) {
+    void audioContext.resume();
+  }
+
   tracks.forEach((track) => {
     const sound = soundById.get(track.id);
 
     if (!sound) {
+      return;
+    }
+
+    if (!track.active) {
+      const inactiveAudio = audioRefs.get(track.id);
+
+      if (inactiveAudio) {
+        inactiveAudio.onended = null;
+        inactiveAudio.pause();
+        inactiveAudio.currentTime = 0;
+      }
+
       return;
     }
 
@@ -377,9 +393,7 @@ export const syncTrackAudio = ({
     audioGraph.high.gain.value = track.eq.high;
     audioGraph.panner.pan.value = track.pan / 100;
 
-    if (isPlaying && track.active) {
-      void audioContext.resume();
-
+    if (isPlaying) {
       if (track.randomize) {
         audio.onended = () => {
           const delay = Math.floor(5000 + Math.random() * 5000);
@@ -393,7 +407,9 @@ export const syncTrackAudio = ({
         };
       }
 
-      void audio.play();
+      if (audio.paused) {
+        void audio.play();
+      }
       return;
     }
 
