@@ -1,7 +1,13 @@
 import { SoundCategory, SoundIconName } from './types';
 import type { Sound } from './types';
 
-const source = (path: string) => new URL(path, import.meta.url).href;
+const soundFiles = import.meta.glob<string>('./sounds/**/*.mp3', {
+  eager: true,
+  import: 'default',
+  query: '?url',
+});
+
+const source = (path: string) => soundFiles[path] ?? path;
 
 export const categoryLabels: Record<SoundCategory, string> = {
   [SoundCategory.Nature]: 'Nature',
