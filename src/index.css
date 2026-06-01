@@ -28,16 +28,27 @@
     margin: 0;
     background:
       radial-gradient(
-        circle at 18% 10%,
+        circle,
         rgba(216, 119, 59, 0.22),
         transparent 26rem
       ),
       radial-gradient(
-        circle at 82% 4%,
+        circle,
         rgba(64, 128, 116, 0.2),
         transparent 24rem
       ),
       linear-gradient(145deg, #120d0a 0%, #091013 45%, #07080b 100%);
+    background-attachment: fixed;
+    background-position:
+      -22rem -24rem,
+      calc(100% + 10rem) -24rem,
+      0 0;
+    background-repeat: no-repeat;
+    background-size:
+      54rem 54rem,
+      50rem 50rem,
+      auto;
+    animation: ambient-background-drift 12s ease-in-out infinite alternate;
   }
 
   body::before {
@@ -65,5 +76,34 @@
 
   #root {
     min-height: 100svh;
+  }
+
+  @keyframes ambient-background-drift {
+    0% {
+      background-position:
+        -22rem -24rem,
+        calc(100% + 10rem) -24rem,
+        0 0;
+    }
+
+    50% {
+      background-position:
+        -10rem -16rem,
+        calc(100% + 1rem) -14rem,
+        0 0;
+    }
+
+    100% {
+      background-position:
+        -30rem -8rem,
+        calc(100% + 18rem) -6rem,
+        0 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    body {
+      animation: none;
+    }
   }
 }

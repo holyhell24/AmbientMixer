@@ -1,13 +1,20 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import CategoryFilter from "./components/CategoryFilter";
+import ColorThemePicker from "./components/ColorThemePicker";
 import MixerChannel from "./components/MixerChannel";
 import PresetManager from "./components/PresetManager";
 import SoundGrid from "./components/SoundGrid";
 import TransportControls from "./components/TransportControls";
+import { useTheme } from "./hooks/useTheme";
 import presetData from "./presets.json";
 import { categoryLabels, sounds } from "./soundLibrary";
 import { SoundCategory } from "./types";
-import type { PresetFile, Sound, SoundPreset, TrackState } from "./types";
+import type {
+  PresetFile,
+  Sound,
+  SoundPreset,
+  TrackState,
+} from "./types";
 import {
   addDeletedPresetId,
   applyPresetToTracks,
@@ -46,6 +53,7 @@ function App() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [masterMuted, setMasterMuted] = useState(false);
   const [masterVolume, setMasterVolume] = useState(100);
+  const { colorPresets, selectedColorPreset, setColorPreset } = useTheme();
   const [customPresets, setCustomPresets] = useState<SoundPreset[]>(() => {
     return parseStoredPresets(localStorage.getItem(customPresetStorageKey));
   });
@@ -195,7 +203,13 @@ function App() {
   };
 
   return (
-    <main className="mx-auto min-h-svh w-[min(880px,calc(100%-32px))] px-0 py-16 text-[#f8f7fb] max-[640px]:w-full max-[640px]:px-3 max-[640px]:pt-8 max-[420px]:px-2">
+    <>
+      <ColorThemePicker
+        colorPresets={colorPresets}
+        selectedColorPresetId={selectedColorPreset.id}
+        onChangeColorPreset={setColorPreset}
+      />
+      <main className="mx-auto min-h-svh w-[min(880px,calc(100%-32px))] px-0 py-16 text-[#f8f7fb] max-[640px]:w-full max-[640px]:px-3 max-[640px]:pt-8 max-[420px]:px-2">
       <section
         className="grid justify-items-center pb-16 text-center max-[640px]:pb-10"
         aria-labelledby="app-title"
@@ -209,7 +223,7 @@ function App() {
       </section>
 
       <aside
-        className="mb-6 -mt-7 overflow-hidden rounded-lg border border-[#9acae0]/20 bg-[linear-gradient(180deg,rgba(154,202,224,0.08),rgba(255,255,255,0.025)),rgba(18,20,25,0.88)] shadow-[0_24px_70px_rgba(0,0,0,0.36)] max-[640px]:-mt-4"
+        className="mb-6 -mt-7 overflow-hidden rounded-lg border border-[color-mix(in_srgb,var(--theme-glow)_22%,transparent)] bg-[linear-gradient(180deg,color-mix(in_srgb,var(--theme-glow)_8%,transparent),rgba(255,255,255,0.025)),rgba(18,20,25,0.88)] shadow-[0_24px_70px_rgba(0,0,0,0.36)] max-[640px]:-mt-4"
         aria-label="Mixer channels"
       >
         <div className="flex items-center justify-between gap-3.5 border-b border-white/10 px-4.5 py-4 text-[#a5a2ad] max-[420px]:px-3 max-[420px]:py-3">
@@ -318,7 +332,8 @@ function App() {
           onToggleSound={toggleSound}
         />
       </section>
-    </main>
+      </main>
+    </>
   );
 }
 

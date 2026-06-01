@@ -37,14 +37,14 @@ const normalizeEqualizerSettings = (
 });
 
 export const createInitialTracks = (): TrackState[] =>
-  sounds.map((sound, index) => ({
+  sounds.map((sound) => ({
     id: sound.id,
-    active: index < 3,
+    active: false,
     eq: defaultEqualizerSettings,
     muted: false,
     pan: 0,
     randomize: false,
-    volume: index < 3 ? 58 : 42,
+    volume: 50,
   }));
 
 export const normalizePreset = (preset: SoundPreset): SoundPreset => ({
