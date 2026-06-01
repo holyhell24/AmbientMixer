@@ -1,6 +1,13 @@
 import { FiShuffle, FiTrash2, FiVolume2, FiVolumeX } from 'react-icons/fi';
 import SoundIcon from '../SoundIcon';
 import type { MixerChannelProps } from './types';
+import {
+  equalizerBands,
+  getResetEqualizerSettings,
+  getUpdatedEqualizerSettings,
+  resetChannelPan,
+  resetChannelVolume,
+} from './utils';
 
 function MixerChannel({
   sound,
@@ -32,6 +39,7 @@ function MixerChannel({
           max="100"
           min="0"
           onChange={(event) => onChangeVolume(Number(event.target.value))}
+          onDoubleClick={() => resetChannelVolume(onChangeVolume)}
           type="range"
           value={track.volume}
         />
@@ -49,16 +57,13 @@ function MixerChannel({
             max="100"
             min="-100"
             onChange={(event) => onChangePan(Number(event.target.value))}
+            onDoubleClick={() => resetChannelPan(onChangePan)}
             type="range"
             value={track.pan}
           />
         </label>
         <div className="grid grid-cols-3 gap-1.5">
-          {[
-            ['low', 'Low'],
-            ['mid', 'Mid'],
-            ['high', 'High'],
-          ].map(([band, label]) => (
+          {equalizerBands.map(({ name: band, label }) => (
             <label
               className="grid justify-items-center gap-1 text-[0.58rem] font-black tracking-[0.04em] text-[#aaa69f] uppercase"
               key={band}
@@ -70,16 +75,22 @@ function MixerChannel({
                 max="12"
                 min="-12"
                 onChange={(event) =>
-                  onChangeEqualizer({
-                    ...track.eq,
-                    [band]: Number(event.target.value),
-                  })
+                  onChangeEqualizer(
+                    getUpdatedEqualizerSettings(
+                      track.eq,
+                      band,
+                      Number(event.target.value),
+                    ),
+                  )
+                }
+                onDoubleClick={() =>
+                  onChangeEqualizer(getResetEqualizerSettings(track.eq, band))
                 }
                 type="range"
-                value={track.eq[band as keyof typeof track.eq]}
+                value={track.eq[band]}
               />
               <span className="text-[0.56rem] text-[#9acade]">
-                {track.eq[band as keyof typeof track.eq]}
+                {track.eq[band]}
               </span>
             </label>
           ))}
