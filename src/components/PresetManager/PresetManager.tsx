@@ -71,7 +71,7 @@ function PresetManager({
       aria-label="Sound presets"
     >
       <div className="flex flex-wrap items-center justify-between gap-2.5 max-[560px]:grid max-[560px]:grid-cols-1">
-        <h2 className="m-0 font-serif text-[1.4rem] tracking-normal text-white">Presets</h2>
+        <h2 className="m-0 font-serif text-[1.4rem] tracking-normal text-white max-[560px]:text-center">Presets</h2>
         <div className="grid grid-cols-2 items-center gap-2.5 max-[560px]:w-full">
           <button className="min-h-[42px] whitespace-nowrap rounded-md border border-white/15 bg-white/[0.06] px-3 font-black text-[#f8f7fb] hover:border-[#9acae0]/70 hover:bg-[#9acae0]/10" onClick={onExportPresets} type="button">
             Export
@@ -124,19 +124,19 @@ function PresetManager({
             key={category}
             open
           >
-            <summary className="flex cursor-pointer list-none items-center justify-between gap-3 rounded px-1 py-1 font-black text-[#f8f7fb] marker:hidden [&::-webkit-details-marker]:hidden">
-              <span className="flex items-center gap-2">
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-3 rounded px-1 py-1 font-black text-[#f8f7fb] marker:hidden max-[380px]:items-start [&::-webkit-details-marker]:hidden">
+              <span className="flex min-w-0 items-center gap-2">
                 <FiChevronDown
                   aria-hidden="true"
-                  className="h-4 w-4 transition-transform duration-200 group-open:rotate-180"
+                  className="h-4 w-4 shrink-0 transition-transform duration-200 group-open:rotate-180"
                 />
-                {category}
+                <span className="truncate">{category}</span>
               </span>
-              <span className="text-xs font-bold text-[#9acade]">
+              <span className="shrink-0 text-xs font-bold text-[#9acade]">
                 {categoryPresets.length} presets
               </span>
             </summary>
-            <div className="mt-2.5 flex flex-wrap gap-2.5">
+            <div className="mt-2.5 flex flex-wrap gap-2.5 max-[520px]:justify-center">
               {categoryPresets.map((preset) => (
                 <div
                   className="grid h-[72px] w-[210px] grid-cols-[1fr_32px] items-center gap-2 rounded-md border border-white/15 bg-white/[0.06] px-3 py-2.5 text-[#f8f7fb] hover:border-[#9acae0]/70 hover:bg-[#9acae0]/10 max-[520px]:w-[min(210px,100%)]"

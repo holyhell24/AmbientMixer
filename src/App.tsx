@@ -336,7 +336,7 @@ function App() {
   };
 
   return (
-    <main className="mx-auto min-h-svh w-[min(880px,calc(100%-32px))] px-0 py-16 text-[#f8f7fb] max-[640px]:w-[min(100%-16px,880px)] max-[640px]:pt-8 max-[420px]:w-[calc(100%-12px)]">
+    <main className="mx-auto min-h-svh w-[min(880px,calc(100%-32px))] px-0 py-16 text-[#f8f7fb] max-[640px]:w-full max-[640px]:px-3 max-[640px]:pt-8 max-[420px]:px-2">
       <section
         className="grid justify-items-center pb-16 text-center max-[640px]:pb-10"
         aria-labelledby="app-title"
@@ -353,14 +353,14 @@ function App() {
         className="mb-6 -mt-7 overflow-hidden rounded-lg border border-[#9acae0]/20 bg-[linear-gradient(180deg,rgba(154,202,224,0.08),rgba(255,255,255,0.025)),rgba(18,20,25,0.88)] shadow-[0_24px_70px_rgba(0,0,0,0.36)] max-[640px]:-mt-4"
         aria-label="Mixer channels"
       >
-        <div className="flex items-center justify-between gap-3.5 border-b border-white/10 px-4.5 py-4 text-[#a5a2ad]">
+        <div className="flex items-center justify-between gap-3.5 border-b border-white/10 px-4.5 py-4 text-[#a5a2ad] max-[420px]:px-3 max-[420px]:py-3">
           <h2 className="m-0 font-serif text-2xl tracking-normal text-white">
             Mixer
           </h2>
           <span>{activeTracks.length} active</span>
         </div>
         {activeSounds.length > 0 ? (
-          <div className="grid grid-cols-[repeat(auto-fit,minmax(112px,1fr))] gap-2.5 p-2.5 max-[640px]:grid-cols-2 max-[420px]:grid-cols-1">
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(128px,1fr))] gap-2.5 p-2.5 max-[560px]:grid-cols-2 max-[360px]:grid-cols-1">
             {activeSounds.map((sound) => {
               const track = tracks.find(
                 (currentTrack) => currentTrack.id === sound.id,
