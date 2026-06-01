@@ -311,7 +311,6 @@ function App() {
           sounds={selectedSounds}
           tracks={tracks}
           maxActiveReached={activeTracks.length >= maxActiveTracks}
-          onChangeVolume={(id, volume) => updateTrack(id, { volume })}
           onToggleSound={toggleSound}
         />
       </section>

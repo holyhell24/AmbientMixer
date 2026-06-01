@@ -1,16 +1,6 @@
 {
   "presets": [
     {
-      "id": "preset-deep-focus",
-      "name": "Deep Focus",
-      "category": "Focus",
-      "tracks": [
-        { "id": "river", "volume": 42, "muted": false },
-        { "id": "wind-in-trees", "volume": 36, "muted": false },
-        { "id": "library", "volume": 28, "muted": false }
-      ]
-    },
-    {
       "id": "preset-rainy-window",
       "name": "Rainy Window",
       "category": "Rain",

@@ -5,7 +5,6 @@ function SoundGrid({
   sounds,
   tracks,
   maxActiveReached,
-  onChangeVolume,
   onToggleSound,
 }: SoundGridProps) {
   return (
@@ -23,7 +22,6 @@ function SoundGrid({
             key={sound.id}
             sound={sound}
             track={track}
-            onChangeVolume={onChangeVolume}
             onToggleSound={onToggleSound}
           />
         );
