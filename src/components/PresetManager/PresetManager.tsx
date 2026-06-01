@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { FiChevronDown, FiX } from 'react-icons/fi';
-import type { PresetFile } from '../../types';
 import type { PresetManagerProps } from './types';
+import { groupPresetsByCategory, readPresetFile } from './utils';
 
 function PresetManager({
   activeCount,
@@ -16,22 +16,7 @@ function PresetManager({
   const [presetName, setPresetName] = useState('');
   const [presetCategory, setPresetCategory] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const presetsByCategory = presets
-    .toSorted((firstPreset, secondPreset) => {
-      const categoryComparison = firstPreset.category.localeCompare(
-        secondPreset.category,
-      );
-
-      return categoryComparison || firstPreset.name.localeCompare(secondPreset.name);
-    })
-    .reduce<Record<string, typeof presets>>((groupedPresets, preset) => {
-      const category = preset.category || 'Custom';
-
-      return {
-        ...groupedPresets,
-        [category]: [...(groupedPresets[category] ?? []), preset],
-      };
-    }, {});
+  const presetsByCategory = groupPresetsByCategory(presets);
 
   const handleSavePreset = () => {
     const trimmedName = presetName.trim();
@@ -46,23 +31,16 @@ function PresetManager({
     setPresetCategory('');
   };
 
-  const handleImportFile = (file: File | undefined) => {
+  const handleImportFile = async (file: File | undefined) => {
     if (!file) {
       return;
     }
 
-    const reader = new FileReader();
-
-    reader.addEventListener('load', () => {
-      try {
-        const parsedPresetFile = JSON.parse(String(reader.result)) as PresetFile;
-        onImportPresets(parsedPresetFile);
-      } catch {
-        window.alert('This file is not a valid presets JSON file.');
-      }
-    });
-
-    reader.readAsText(file);
+    try {
+      onImportPresets(await readPresetFile(file));
+    } catch {
+      window.alert('This file is not a valid presets JSON file.');
+    }
   };
 
   return (

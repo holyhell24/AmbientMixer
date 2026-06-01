@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import CategoryFilter from "./components/CategoryFilter";
 import MixerChannel from "./components/MixerChannel";
 import PresetManager from "./components/PresetManager";
@@ -8,88 +8,43 @@ import presetData from "./presets.json";
 import { categoryLabels, sounds } from "./soundLibrary";
 import { SoundCategory } from "./types";
 import type { PresetFile, Sound, SoundPreset, TrackState } from "./types";
+import {
+  addDeletedPresetId,
+  applyPresetToTracks,
+  createInitialTracks,
+  createPreset,
+  customPresetStorageKey,
+  deletedPresetIdsStorageKey,
+  downloadPresetFile,
+  getActiveSounds,
+  getImportedPresets,
+  getPresetCategories,
+  maxActiveTracks,
+  mergePresets,
+  parseDeletedPresetIds,
+  parseStoredPresets,
+  removePresetById,
+  resetTracks,
+  restoreImportedPresetIds,
+  stopAudio,
+  syncTrackAudio,
+  toggleSoundTrack,
+  updateTrackState,
+} from "./utils";
 
-const initialTracks: TrackState[] = sounds.map((sound, index) => ({
-  id: sound.id,
-  active: index < 3,
-  muted: false,
-  randomize: false,
-  volume: index < 3 ? 58 : 42,
-}));
-
-const customPresetStorageKey = "ambient-mixer-presets";
-const deletedPresetIdsStorageKey = "ambient-mixer-deleted-preset-ids";
 const builtInPresets = presetData.presets satisfies SoundPreset[];
-const maxActiveTracks = 6;
-
-const normalizePreset = (preset: SoundPreset): SoundPreset => ({
-  id: preset.id || `preset-${crypto.randomUUID()}`,
-  name: preset.name || "Imported Preset",
-  category: preset.category?.trim() || "Custom",
-  tracks: preset.tracks
-    .filter((track) => sounds.some((sound) => sound.id === track.id))
-    .map((track) => ({
-      id: track.id,
-      muted: Boolean(track.muted),
-      randomize: Boolean(track.randomize),
-      volume: Math.min(100, Math.max(0, Number(track.volume) || 0)),
-    })),
-});
-
-const mergePresets = (
-  basePresets: SoundPreset[],
-  overridePresets: SoundPreset[],
-) => {
-  const presetById = new Map(basePresets.map((preset) => [preset.id, preset]));
-
-  overridePresets.forEach((preset) => {
-    presetById.set(preset.id, preset);
-  });
-
-  return Array.from(presetById.values());
-};
 
 function App() {
   const [selectedCategory, setSelectedCategory] = useState<SoundCategory>(
     SoundCategory.Nature,
   );
-  const [tracks, setTracks] = useState<TrackState[]>(initialTracks);
+  const [tracks, setTracks] = useState<TrackState[]>(createInitialTracks);
   const [isPlaying, setIsPlaying] = useState(false);
   const [customPresets, setCustomPresets] = useState<SoundPreset[]>(() => {
-    const storedPresetFile = localStorage.getItem(customPresetStorageKey);
-
-    if (!storedPresetFile) {
-      return [];
-    }
-
-    try {
-      const parsedPresetFile = JSON.parse(storedPresetFile) as PresetFile;
-
-      return parsedPresetFile.presets
-        .map(normalizePreset)
-        .filter((preset) => preset.tracks.length > 0);
-    } catch {
-      return [];
-    }
+    return parseStoredPresets(localStorage.getItem(customPresetStorageKey));
   });
   const [deletedPresetIds, setDeletedPresetIds] = useState<string[]>(() => {
-    const storedDeletedPresetIds = localStorage.getItem(
-      deletedPresetIdsStorageKey,
-    );
-
-    if (!storedDeletedPresetIds) {
-      return [];
-    }
-
-    try {
-      const parsedDeletedPresetIds = JSON.parse(storedDeletedPresetIds);
-
-      return Array.isArray(parsedDeletedPresetIds)
-        ? parsedDeletedPresetIds.filter((id): id is string => typeof id === "string")
-        : [];
-    } catch {
-      return [];
-    }
+    return parseDeletedPresetIds(localStorage.getItem(deletedPresetIdsStorageKey));
   });
   const audioRefs = useRef(new Map<string, HTMLAudioElement>());
   const randomReplayTimeoutRefs = useRef(new Map<string, number>());
@@ -100,9 +55,7 @@ function App() {
   );
 
   const activeTracks = tracks.filter((track) => track.active);
-  const activeSounds = activeTracks
-    .map((track) => soundById.get(track.id))
-    .filter((sound): sound is Sound => Boolean(sound));
+  const activeSounds = getActiveSounds(activeTracks, soundById);
   const selectedSounds = sounds.filter(
     (sound) => sound.category === selectedCategory,
   );
@@ -110,80 +63,24 @@ function App() {
   const presets = mergePresets(builtInPresets, customPresets).filter(
     (preset) => !deletedPresetIdSet.has(preset.id),
   );
-  const presetCategories = Array.from(
-    new Set(presets.map((preset) => preset.category).filter(Boolean)),
-  ).sort((firstCategory, secondCategory) =>
-    firstCategory.localeCompare(secondCategory),
-  );
-
-  const getAudio = useCallback((sound: Sound) => {
-    const existingAudio = audioRefs.current.get(sound.id);
-
-    if (existingAudio) {
-      return existingAudio;
-    }
-
-    const audio = new Audio(sound.src);
-    audio.loop = true;
-    audio.preload = "auto";
-    audioRefs.current.set(sound.id, audio);
-
-    return audio;
-  }, []);
+  const presetCategories = getPresetCategories(presets);
 
   useEffect(() => {
-    randomReplayTimeoutRefs.current.forEach((timeoutId) => {
-      window.clearTimeout(timeoutId);
+    syncTrackAudio({
+      audioRefs: audioRefs.current,
+      isPlaying,
+      randomReplayTimeoutRefs: randomReplayTimeoutRefs.current,
+      soundById,
+      tracks,
     });
-    randomReplayTimeoutRefs.current.clear();
-
-    tracks.forEach((track) => {
-      const sound = soundById.get(track.id);
-
-      if (!sound) {
-        return;
-      }
-
-      const audio = getAudio(sound);
-      audio.onended = null;
-      audio.loop = !track.randomize;
-      audio.volume = track.muted ? 0 : track.volume / 100;
-
-      if (isPlaying && track.active) {
-        if (track.randomize) {
-          audio.onended = () => {
-            const delay = Math.floor(5000 + Math.random() * 5000);
-            const timeoutId = window.setTimeout(() => {
-              audio.currentTime = 0;
-              void audio.play();
-              randomReplayTimeoutRefs.current.delete(track.id);
-            }, delay);
-
-            randomReplayTimeoutRefs.current.set(track.id, timeoutId);
-          };
-        }
-
-        void audio.play();
-        return;
-      }
-
-      audio.pause();
-      audio.currentTime = 0;
-    });
-  }, [getAudio, isPlaying, soundById, tracks]);
+  }, [isPlaying, soundById, tracks]);
 
   useEffect(() => {
     const audioMap = audioRefs.current;
     const randomReplayTimeoutMap = randomReplayTimeoutRefs.current;
 
     return () => {
-      randomReplayTimeoutMap.forEach((timeoutId) => {
-        window.clearTimeout(timeoutId);
-      });
-      randomReplayTimeoutMap.clear();
-      audioMap.forEach((audio) => {
-        audio.pause();
-      });
+      stopAudio(audioMap, randomReplayTimeoutMap);
     };
   }, []);
 
@@ -203,104 +100,39 @@ function App() {
 
   const updateTrack = (id: string, patch: Partial<TrackState>) => {
     setTracks((currentTracks) =>
-      currentTracks.map((track) =>
-        track.id === id ? { ...track, ...patch } : track,
-      ),
+      updateTrackState(currentTracks, id, patch),
     );
   };
 
   const toggleSound = (sound: Sound) => {
     setTracks((currentTracks) =>
-      currentTracks.map((track) => {
-        if (track.id !== sound.id) {
-          return track;
-        }
-
-        const activeTrackCount = currentTracks.filter(
-          (currentTrack) => currentTrack.active,
-        ).length;
-
-        if (!track.active && activeTrackCount >= maxActiveTracks) {
-          return track;
-        }
-
-        return { ...track, active: !track.active, muted: false };
-      }),
+      toggleSoundTrack(currentTracks, sound.id, maxActiveTracks),
     );
   };
 
   const resetMixer = () => {
     setIsPlaying(false);
-    setTracks((currentTracks) =>
-      currentTracks.map((track) => ({
-        ...track,
-        active: false,
-        muted: false,
-        randomize: false,
-        volume: 50,
-      })),
-    );
+    setTracks(resetTracks);
   };
 
   const applyPreset = (preset: SoundPreset) => {
-    const presetTrackById = new Map(
-      preset.tracks.slice(0, maxActiveTracks).map((track) => [track.id, track]),
-    );
-
     setTracks((currentTracks) =>
-      currentTracks.map((track) => {
-        const presetTrack = presetTrackById.get(track.id);
-
-        if (!presetTrack) {
-          return { ...track, active: false };
-        }
-
-        return {
-          ...track,
-          active: true,
-          muted: presetTrack.muted,
-          randomize: Boolean(presetTrack.randomize),
-          volume: presetTrack.volume,
-        };
-      }),
+      applyPresetToTracks(currentTracks, preset, maxActiveTracks),
     );
   };
 
   const savePreset = (name: string, category: string) => {
-    const activePresetTracks = activeTracks.map((track) => ({
-      id: track.id,
-      muted: track.muted,
-      randomize: track.randomize,
-      volume: track.volume,
-    }));
+    const preset = createPreset(name, category, activeTracks);
 
-    if (activePresetTracks.length === 0) {
+    if (!preset) {
       return;
     }
 
-    setCustomPresets((currentPresets) => [
-      ...currentPresets,
-      {
-        id: `preset-${crypto.randomUUID()}`,
-        name,
-        category: category.trim() || "Custom",
-        tracks: activePresetTracks,
-      },
-    ]);
+    setCustomPresets((currentPresets) => [...currentPresets, preset]);
   };
 
   const exportPresets = () => {
-    const presetFile: PresetFile = { presets };
-    const blob = new Blob([JSON.stringify(presetFile, null, 2)], {
-      type: "application/json",
-    });
-    const objectUrl = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-
-    link.href = objectUrl;
-    link.download = "ambient-mixer-presets.json";
-    link.click();
-    URL.revokeObjectURL(objectUrl);
+    downloadPresetFile(presets);
   };
 
   const importPresets = (presetFile: PresetFile) => {
@@ -309,29 +141,27 @@ function App() {
       return;
     }
 
-    const importedPresets = presetFile.presets
-      .map(normalizePreset)
-      .filter((preset) => preset.tracks.length > 0);
+    const importedPresets = getImportedPresets(presetFile);
+
+    if (!importedPresets) {
+      window.alert("This presets JSON file must include a presets array.");
+      return;
+    }
 
     setCustomPresets((currentPresets) =>
       mergePresets(currentPresets, importedPresets),
     );
     setDeletedPresetIds((currentDeletedPresetIds) =>
-      currentDeletedPresetIds.filter(
-        (deletedPresetId) =>
-          !importedPresets.some((preset) => preset.id === deletedPresetId),
-      ),
+      restoreImportedPresetIds(currentDeletedPresetIds, importedPresets),
     );
   };
 
   const removePreset = (id: string) => {
     setCustomPresets((currentPresets) =>
-      currentPresets.filter((preset) => preset.id !== id),
+      removePresetById(currentPresets, id),
     );
     setDeletedPresetIds((currentDeletedPresetIds) =>
-      currentDeletedPresetIds.includes(id)
-        ? currentDeletedPresetIds
-        : [...currentDeletedPresetIds, id],
+      addDeletedPresetId(currentDeletedPresetIds, id),
     );
   };
 
