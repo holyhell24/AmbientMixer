@@ -246,12 +246,16 @@ export const clearRandomReplayTimeouts = (
 export const syncTrackAudio = ({
   audioRefs,
   isPlaying,
+  masterMuted,
+  masterVolume,
   randomReplayTimeoutRefs,
   soundById,
   tracks,
 }: {
   audioRefs: Map<string, HTMLAudioElement>;
   isPlaying: boolean;
+  masterMuted: boolean;
+  masterVolume: number;
   randomReplayTimeoutRefs: Map<string, number>;
   soundById: Map<string, Sound>;
   tracks: TrackState[];
@@ -268,7 +272,9 @@ export const syncTrackAudio = ({
     const audio = getAudio(sound, audioRefs);
     audio.onended = null;
     audio.loop = !track.randomize;
-    audio.volume = track.muted ? 0 : track.volume / 100;
+    audio.volume = track.muted || masterMuted
+      ? 0
+      : (track.volume / 100) * (masterVolume / 100);
 
     if (isPlaying && track.active) {
       if (track.randomize) {

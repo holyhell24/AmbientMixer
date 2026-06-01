@@ -40,6 +40,8 @@ function App() {
   );
   const [tracks, setTracks] = useState<TrackState[]>(createInitialTracks);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [masterMuted, setMasterMuted] = useState(false);
+  const [masterVolume, setMasterVolume] = useState(100);
   const [customPresets, setCustomPresets] = useState<SoundPreset[]>(() => {
     return parseStoredPresets(localStorage.getItem(customPresetStorageKey));
   });
@@ -69,11 +71,13 @@ function App() {
     syncTrackAudio({
       audioRefs: audioRefs.current,
       isPlaying,
+      masterMuted,
+      masterVolume,
       randomReplayTimeoutRefs: randomReplayTimeoutRefs.current,
       soundById,
       tracks,
     });
-  }, [isPlaying, soundById, tracks]);
+  }, [isPlaying, masterMuted, masterVolume, soundById, tracks]);
 
   useEffect(() => {
     const audioMap = audioRefs.current;
@@ -233,7 +237,13 @@ function App() {
         <TransportControls
           activeCount={activeTracks.length}
           isPlaying={isPlaying}
+          masterMuted={masterMuted}
+          masterVolume={masterVolume}
+          onChangeMasterVolume={setMasterVolume}
           onReset={resetMixer}
+          onToggleMasterMute={() =>
+            setMasterMuted((currentValue) => !currentValue)
+          }
           onTogglePlay={() => setIsPlaying((currentValue) => !currentValue)}
         />
       </section>
