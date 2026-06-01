@@ -6,4 +6,5 @@ export type MixerChannelProps = {
   onChangeVolume: (volume: number) => void;
   onToggleActive: () => void;
   onToggleMute: () => void;
+  onToggleRandomize: () => void;
 };

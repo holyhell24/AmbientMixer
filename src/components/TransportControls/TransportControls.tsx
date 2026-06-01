@@ -1,4 +1,6 @@
-import type { TransportControlsProps } from './types';
+import { FiX } from "react-icons/fi";
+import { IoStop, IoPlay } from "react-icons/io5";
+import type { TransportControlsProps } from "./types";
 
 function TransportControls({
   activeCount,
@@ -14,8 +16,12 @@ function TransportControls({
         onClick={onTogglePlay}
         type="button"
       >
-        <span aria-hidden="true">{isPlaying ? '■' : '▶'}</span>
-        {isPlaying ? 'Stop' : 'Play'}
+        {isPlaying ? (
+          <IoStop aria-hidden="true" />
+        ) : (
+          <IoPlay aria-hidden="true" />
+        )}
+        {isPlaying ? "Stop" : "Play"}
       </button>
       <button
         aria-label="Clear active sounds"
@@ -24,7 +30,7 @@ function TransportControls({
         title="Clear active sounds"
         type="button"
       >
-        ⌫
+        <FiX aria-hidden="true" />
       </button>
     </div>
   );

@@ -1,17 +1,16 @@
 export const categoryFilterStyles = `
   .category-filter {
-    display: flex;
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
     gap: 10px;
-    overflow-x: auto;
     padding: 2px 0 16px;
-    scrollbar-width: thin;
   }
 
   .category-filter__button {
     display: inline-flex;
-    flex: 0 0 auto;
     align-items: center;
-    gap: 8px;
+    justify-content: center;
     min-height: 42px;
     padding: 0 14px;
     border: 1px solid rgba(255, 255, 255, 0.14);
@@ -35,10 +34,9 @@ export const categoryFilterStyles = `
     transform: translateY(-1px);
   }
 
-  .category-filter__icon {
-    display: grid;
-    width: 20px;
-    height: 20px;
-    place-items: center;
+  @media (max-width: 560px) {
+    .category-filter {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
   }
 `;

@@ -1,8 +1,8 @@
-import { categoryIcons, categoryLabels } from '../../soundLibrary';
-import type { SoundCategory } from '../../types';
+import { categoryLabels } from '../../soundLibrary';
+import { SoundCategory } from '../../types';
 import type { CategoryFilterProps } from './types';
 
-const categories = Object.keys(categoryLabels) as SoundCategory[];
+const categories = Object.values(SoundCategory);
 
 function CategoryFilter({ activeCategory, onSelectCategory }: CategoryFilterProps) {
   return (
@@ -17,9 +17,6 @@ function CategoryFilter({ activeCategory, onSelectCategory }: CategoryFilterProp
           title={categoryLabels[category]}
           type="button"
         >
-          <span className="category-filter__icon" aria-hidden="true">
-            {categoryIcons[category]}
-          </span>
           <span>{categoryLabels[category]}</span>
         </button>
       ))}

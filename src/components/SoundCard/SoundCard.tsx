@@ -1,3 +1,4 @@
+import SoundIcon from '../SoundIcon';
 import type { SoundCardProps } from './types';
 
 function SoundCard({ sound, track, onChangeVolume, onToggleSound }: SoundCardProps) {
@@ -10,7 +11,7 @@ function SoundCard({ sound, track, onChangeVolume, onToggleSound }: SoundCardPro
         type="button"
       >
         <span className="sound-card__icon" aria-hidden="true">
-          {sound.icon}
+          <SoundIcon name={sound.icon} />
         </span>
         <span className="sound-card__name">{sound.name}</span>
       </button>

@@ -1,7 +1,9 @@
 import { categoryFilterStyles } from './components/CategoryFilter/styles';
 import { mixerChannelStyles } from './components/MixerChannel/styles';
+import { presetManagerStyles } from './components/PresetManager/styles';
 import { soundCardStyles } from './components/SoundCard/styles';
 import { soundGridStyles } from './components/SoundGrid/styles';
+import { soundIconStyles } from './components/SoundIcon/styles';
 import { transportControlsStyles } from './components/TransportControls/styles';
 
 export const appStyles = `
@@ -141,20 +143,12 @@ export const appStyles = `
 
   .app__transport {
     position: relative;
-    margin: 58px 0 76px;
-  }
-
-  .app__transport::after {
-    position: absolute;
-    top: 44px;
-    width: 1px;
-    height: 76px;
-    content: "";
-    background: rgba(255, 255, 255, 0.11);
+    margin: 12px 0 34px;
   }
 
   .app__library {
     gap: 22px;
+    margin-top: 34px;
   }
 
   .app__library-heading {
@@ -175,11 +169,15 @@ export const appStyles = `
   }
 
   .app__mixer {
-    margin-top: 28px;
+    margin-top: -28px;
+    margin-bottom: 24px;
     overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, 0.11);
+    border: 1px solid rgba(154, 202, 224, 0.16);
     border-radius: 8px;
-    background: rgba(18, 20, 25, 0.84);
+    background:
+      linear-gradient(180deg, rgba(154, 202, 224, 0.08), rgba(255, 255, 255, 0.025)),
+      rgba(18, 20, 25, 0.88);
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.36);
   }
 
   .app__mixer-heading {
@@ -198,9 +196,9 @@ export const appStyles = `
 
   .app__channels {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(86px, 1fr));
-    gap: 1px;
-    background: rgba(255, 255, 255, 0.08);
+    grid-template-columns: repeat(auto-fit, minmax(112px, 1fr));
+    gap: 10px;
+    padding: 10px;
   }
 
   .app__empty {
@@ -212,7 +210,7 @@ export const appStyles = `
 
   @media (max-width: 640px) {
     .app {
-      width: min(100% - 24px, 880px);
+      width: min(100% - 12px, 880px);
       padding-top: 34px;
     }
 
@@ -221,12 +219,14 @@ export const appStyles = `
     }
 
     .app__transport {
-      margin: 42px 0 56px;
+      margin: 8px 0 28px;
     }
   }
 
   ${categoryFilterStyles}
+  ${presetManagerStyles}
   ${soundGridStyles}
+  ${soundIconStyles}
   ${soundCardStyles}
   ${mixerChannelStyles}
   ${transportControlsStyles}

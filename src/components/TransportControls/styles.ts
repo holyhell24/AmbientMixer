@@ -24,6 +24,11 @@ export const transportControlsStyles = `
     border-radius: 999px;
   }
 
+  .transport-controls__play svg {
+    width: 16px;
+    height: 16px;
+  }
+
   .transport-controls__play:disabled {
     cursor: not-allowed;
     opacity: 0.48;
@@ -37,5 +42,10 @@ export const transportControlsStyles = `
     border-radius: 50%;
     color: #f7f0e4;
     background: rgba(255, 255, 255, 0.06);
+  }
+
+  .transport-controls__icon svg {
+    width: 18px;
+    height: 18px;
   }
 `;

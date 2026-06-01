@@ -27,7 +27,6 @@ export const soundCardStyles = `
   .sound-card__toggle {
     display: grid;
     width: 100%;
-    gap: 10px;
     place-items: center;
     border: 0;
     color: #fff9ef;
@@ -68,5 +67,33 @@ export const soundCardStyles = `
   .sound-card input[type="range"] {
     width: 100%;
     accent-color: #d8773b;
+  }
+
+  @media (max-width: 520px) {
+    .sound-card {
+      min-height: 132px;
+      padding: 10px 8px;
+    }
+
+    .sound-card__toggle {
+      gap: 7px;
+    }
+
+    .sound-card__icon {
+      width: 34px;
+      height: 34px;
+      font-size: 0.78rem;
+    }
+
+    .sound-card__name {
+      min-height: 32px;
+      font-size: 0.82rem;
+      overflow-wrap: anywhere;
+    }
+
+    .sound-card__volume {
+      margin-top: 4px;
+      font-size: 0.62rem;
+    }
   }
 `;
