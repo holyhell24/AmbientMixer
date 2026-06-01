@@ -45,7 +45,7 @@ function PresetManager({
 
   return (
     <section
-      className="my-[18px] mb-[34px] grid gap-3.5 rounded-lg border border-white/10 bg-[rgba(18,20,25,0.76)] p-4"
+      className="my-[18px] mb-[34px] grid gap-3.5 rounded-lg border border-[#9acae0]/20 bg-[linear-gradient(180deg,rgba(154,202,224,0.08),rgba(255,255,255,0.025)),rgba(18,20,25,0.88)] p-4 shadow-[0_24px_70px_rgba(0,0,0,0.36)]"
       aria-label="Sound presets"
     >
       <div className="flex flex-wrap items-center justify-between gap-2.5">

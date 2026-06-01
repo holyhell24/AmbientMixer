@@ -7,12 +7,7 @@ import TransportControls from "./components/TransportControls";
 import presetData from "./presets.json";
 import { categoryLabels, sounds } from "./soundLibrary";
 import { SoundCategory } from "./types";
-import type {
-  PresetFile,
-  Sound,
-  SoundPreset,
-  TrackState,
-} from "./types";
+import type { PresetFile, Sound, SoundPreset, TrackState } from "./types";
 
 const initialTracks: TrackState[] = sounds.map((sound, index) => ({
   id: sound.id,
@@ -52,8 +47,9 @@ const mergePresets = (
 };
 
 function App() {
-  const [selectedCategory, setSelectedCategory] =
-    useState<SoundCategory>(SoundCategory.Nature);
+  const [selectedCategory, setSelectedCategory] = useState<SoundCategory>(
+    SoundCategory.Nature,
+  );
   const [tracks, setTracks] = useState<TrackState[]>(initialTracks);
   const [isPlaying, setIsPlaying] = useState(false);
   const [customPresets, setCustomPresets] = useState<SoundPreset[]>(() => {
@@ -142,6 +138,7 @@ function App() {
       }
 
       audio.pause();
+      audio.currentTime = 0;
     });
   }, [getAudio, isPlaying, soundById, tracks]);
 
@@ -274,99 +271,120 @@ function App() {
   };
 
   return (
-      <main className="mx-auto min-h-svh w-[min(880px,calc(100%-32px))] px-0 py-16 text-[#f8f7fb] max-[640px]:w-[min(100%-12px,880px)] max-[640px]:pt-8">
-        <section className="grid justify-items-center pb-16 text-center max-[640px]:pb-12" aria-labelledby="app-title">
-          <h1 className="m-0 font-serif text-[clamp(2.2rem,7vw,4rem)] leading-none tracking-normal text-white [text-shadow:0_2px_0_rgba(46,76,113,0.8)]" id="app-title">
-            Ambient Sounds
-          </h1>
-          <p className="mt-1 mb-5 font-serif text-[clamp(1.45rem,4vw,2.1rem)] font-black tracking-normal text-[#9c98a5]">For Focus and Calm</p>
-          <span className="inline-flex min-h-[30px] items-center rounded-full border border-white/15 bg-white/[0.04] px-3.5 text-sm capitalize text-[#c9cedc]">{sounds.length} sounds</span>
-        </section>
+    <main className="mx-auto min-h-svh w-[min(880px,calc(100%-32px))] px-0 py-16 text-[#f8f7fb] max-[640px]:w-[min(100%-12px,880px)] max-[640px]:pt-8">
+      <section
+        className="grid justify-items-center pb-16 text-center max-[640px]:pb-12"
+        aria-labelledby="app-title"
+      >
+        <h1
+          className="m-0 font-serif text-[clamp(2.2rem,7vw,4rem)] leading-none tracking-normal text-white [text-shadow:0_2px_0_rgba(72,46,31,0.85)]"
+          id="app-title"
+        >
+          Ambient Mixer
+        </h1>
+      </section>
 
-        <aside className="mb-6 -mt-7 overflow-hidden rounded-lg border border-[#9acae0]/20 bg-[linear-gradient(180deg,rgba(154,202,224,0.08),rgba(255,255,255,0.025)),rgba(18,20,25,0.88)] shadow-[0_24px_70px_rgba(0,0,0,0.36)]" aria-label="Mixer channels">
-          <div className="flex items-center justify-between gap-3.5 border-b border-white/10 px-4.5 py-4 text-[#a5a2ad]">
-            <h2 className="m-0 font-serif text-2xl tracking-normal text-white">Mixer</h2>
-            <span>{activeTracks.length} active</span>
+      <aside
+        className="mb-6 -mt-7 overflow-hidden rounded-lg border border-[#9acae0]/20 bg-[linear-gradient(180deg,rgba(154,202,224,0.08),rgba(255,255,255,0.025)),rgba(18,20,25,0.88)] shadow-[0_24px_70px_rgba(0,0,0,0.36)]"
+        aria-label="Mixer channels"
+      >
+        <div className="flex items-center justify-between gap-3.5 border-b border-white/10 px-4.5 py-4 text-[#a5a2ad]">
+          <h2 className="m-0 font-serif text-2xl tracking-normal text-white">
+            Mixer
+          </h2>
+          <span>{activeTracks.length} active</span>
+        </div>
+        {activeSounds.length > 0 ? (
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(112px,1fr))] gap-2.5 p-2.5">
+            {activeSounds.map((sound) => {
+              const track = tracks.find(
+                (currentTrack) => currentTrack.id === sound.id,
+              );
+
+              if (!track) {
+                return null;
+              }
+
+              return (
+                <MixerChannel
+                  key={sound.id}
+                  sound={sound}
+                  track={track}
+                  onChangeVolume={(volume) => updateTrack(sound.id, { volume })}
+                  onToggleActive={() =>
+                    updateTrack(sound.id, { active: !track.active })
+                  }
+                  onToggleMute={() =>
+                    updateTrack(sound.id, { muted: !track.muted })
+                  }
+                  onToggleRandomize={() =>
+                    updateTrack(sound.id, { randomize: !track.randomize })
+                  }
+                />
+              );
+            })}
           </div>
-          {activeSounds.length > 0 ? (
-            <div className="grid grid-cols-[repeat(auto-fit,minmax(112px,1fr))] gap-2.5 p-2.5">
-              {activeSounds.map((sound) => {
-                const track = tracks.find(
-                  (currentTrack) => currentTrack.id === sound.id,
-                );
+        ) : (
+          <p className="m-0 p-7 text-center text-[#9c98a5]">
+            Choose a sound card to add it to the mix.
+          </p>
+        )}
+      </aside>
 
-                if (!track) {
-                  return null;
-                }
-
-                return (
-                  <MixerChannel
-                    key={sound.id}
-                    sound={sound}
-                    track={track}
-                    onChangeVolume={(volume) =>
-                      updateTrack(sound.id, { volume })
-                    }
-                    onToggleActive={() =>
-                      updateTrack(sound.id, { active: !track.active })
-                    }
-                    onToggleMute={() =>
-                      updateTrack(sound.id, { muted: !track.muted })
-                    }
-                    onToggleRandomize={() =>
-                      updateTrack(sound.id, { randomize: !track.randomize })
-                    }
-                  />
-                );
-              })}
-            </div>
-          ) : (
-            <p className="m-0 p-7 text-center text-[#9c98a5]">
-              Choose a sound card to add it to the mix.
-            </p>
-          )}
-        </aside>
-
-        <section className="relative mb-8 mt-3 grid justify-items-center max-[640px]:mb-7 max-[640px]:mt-2" aria-label="Playback controls">
-          <TransportControls
-            activeCount={activeTracks.length}
-            isPlaying={isPlaying}
-            onReset={resetMixer}
-            onTogglePlay={() => setIsPlaying((currentValue) => !currentValue)}
-          />
-        </section>
-
-        <PresetManager
+      <section
+        className="relative mb-8 mt-3 grid justify-items-center max-[640px]:mb-7 max-[640px]:mt-2"
+        aria-label="Playback controls"
+      >
+        <TransportControls
           activeCount={activeTracks.length}
-          presets={presets}
-          onApplyPreset={applyPreset}
-          onExportPresets={exportPresets}
-          onImportPresets={importPresets}
-          onSavePreset={savePreset}
+          isPlaying={isPlaying}
+          onReset={resetMixer}
+          onTogglePlay={() => setIsPlaying((currentValue) => !currentValue)}
         />
+      </section>
 
-        <section className="grid gap-4.5 justify-items-center" aria-label="Categories">
-          <h2 className="m-0 font-serif text-[clamp(1.65rem,4vw,2.15rem)] tracking-normal text-white">Categories</h2>
-          <CategoryFilter
-            activeCategory={selectedCategory}
-            onSelectCategory={setSelectedCategory}
-          />
-        </section>
+      <PresetManager
+        activeCount={activeTracks.length}
+        presets={presets}
+        onApplyPreset={applyPreset}
+        onExportPresets={exportPresets}
+        onImportPresets={importPresets}
+        onSavePreset={savePreset}
+      />
 
-        <section className="mt-8 grid gap-5.5 justify-items-center" aria-labelledby="library-title">
-          <div className="grid justify-items-center gap-3">
-            <h2 className="m-0 font-serif text-[clamp(1.65rem,4vw,2.15rem)] tracking-normal text-white" id="library-title">
-              {categoryLabels[selectedCategory]}
-            </h2>
-          </div>
-          <SoundGrid
-            sounds={selectedSounds}
-            tracks={tracks}
-            onChangeVolume={(id, volume) => updateTrack(id, { volume })}
-            onToggleSound={toggleSound}
-          />
-        </section>
-      </main>
+      <section
+        className="grid gap-4.5 justify-items-center"
+        aria-label="Categories"
+      >
+        <h2 className="m-0 font-serif text-[clamp(1.65rem,4vw,2.15rem)] tracking-normal text-white">
+          Categories
+        </h2>
+        <CategoryFilter
+          activeCategory={selectedCategory}
+          onSelectCategory={setSelectedCategory}
+        />
+      </section>
+
+      <section
+        className="mt-8 grid gap-5.5 justify-items-center"
+        aria-labelledby="library-title"
+      >
+        <div className="grid justify-items-center gap-3">
+          <h2
+            className="m-0 font-serif text-[clamp(1.65rem,4vw,2.15rem)] tracking-normal text-white"
+            id="library-title"
+          >
+            {categoryLabels[selectedCategory]}
+          </h2>
+        </div>
+        <SoundGrid
+          sounds={selectedSounds}
+          tracks={tracks}
+          onChangeVolume={(id, volume) => updateTrack(id, { volume })}
+          onToggleSound={toggleSound}
+        />
+      </section>
+    </main>
   );
 }
 
