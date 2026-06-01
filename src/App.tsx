@@ -18,11 +18,14 @@ const initialTracks: TrackState[] = sounds.map((sound, index) => ({
 }));
 
 const customPresetStorageKey = "ambient-mixer-presets";
+const deletedPresetIdsStorageKey = "ambient-mixer-deleted-preset-ids";
 const builtInPresets = presetData.presets satisfies SoundPreset[];
+const maxActiveTracks = 6;
 
 const normalizePreset = (preset: SoundPreset): SoundPreset => ({
   id: preset.id || `preset-${crypto.randomUUID()}`,
   name: preset.name || "Imported Preset",
+  category: preset.category?.trim() || "Custom",
   tracks: preset.tracks
     .filter((track) => sounds.some((sound) => sound.id === track.id))
     .map((track) => ({
@@ -69,6 +72,25 @@ function App() {
       return [];
     }
   });
+  const [deletedPresetIds, setDeletedPresetIds] = useState<string[]>(() => {
+    const storedDeletedPresetIds = localStorage.getItem(
+      deletedPresetIdsStorageKey,
+    );
+
+    if (!storedDeletedPresetIds) {
+      return [];
+    }
+
+    try {
+      const parsedDeletedPresetIds = JSON.parse(storedDeletedPresetIds);
+
+      return Array.isArray(parsedDeletedPresetIds)
+        ? parsedDeletedPresetIds.filter((id): id is string => typeof id === "string")
+        : [];
+    } catch {
+      return [];
+    }
+  });
   const audioRefs = useRef(new Map<string, HTMLAudioElement>());
   const randomReplayTimeoutRefs = useRef(new Map<string, number>());
 
@@ -84,7 +106,15 @@ function App() {
   const selectedSounds = sounds.filter(
     (sound) => sound.category === selectedCategory,
   );
-  const presets = mergePresets(builtInPresets, customPresets);
+  const deletedPresetIdSet = new Set(deletedPresetIds);
+  const presets = mergePresets(builtInPresets, customPresets).filter(
+    (preset) => !deletedPresetIdSet.has(preset.id),
+  );
+  const presetCategories = Array.from(
+    new Set(presets.map((preset) => preset.category).filter(Boolean)),
+  ).sort((firstCategory, secondCategory) =>
+    firstCategory.localeCompare(secondCategory),
+  );
 
   const getAudio = useCallback((sound: Sound) => {
     const existingAudio = audioRefs.current.get(sound.id);
@@ -164,6 +194,13 @@ function App() {
     );
   }, [customPresets]);
 
+  useEffect(() => {
+    localStorage.setItem(
+      deletedPresetIdsStorageKey,
+      JSON.stringify(deletedPresetIds, null, 2),
+    );
+  }, [deletedPresetIds]);
+
   const updateTrack = (id: string, patch: Partial<TrackState>) => {
     setTracks((currentTracks) =>
       currentTracks.map((track) =>
@@ -174,11 +211,21 @@ function App() {
 
   const toggleSound = (sound: Sound) => {
     setTracks((currentTracks) =>
-      currentTracks.map((track) =>
-        track.id === sound.id
-          ? { ...track, active: !track.active, muted: false }
-          : track,
-      ),
+      currentTracks.map((track) => {
+        if (track.id !== sound.id) {
+          return track;
+        }
+
+        const activeTrackCount = currentTracks.filter(
+          (currentTrack) => currentTrack.active,
+        ).length;
+
+        if (!track.active && activeTrackCount >= maxActiveTracks) {
+          return track;
+        }
+
+        return { ...track, active: !track.active, muted: false };
+      }),
     );
   };
 
@@ -197,7 +244,7 @@ function App() {
 
   const applyPreset = (preset: SoundPreset) => {
     const presetTrackById = new Map(
-      preset.tracks.map((track) => [track.id, track]),
+      preset.tracks.slice(0, maxActiveTracks).map((track) => [track.id, track]),
     );
 
     setTracks((currentTracks) =>
@@ -219,7 +266,7 @@ function App() {
     );
   };
 
-  const savePreset = (name: string) => {
+  const savePreset = (name: string, category: string) => {
     const activePresetTracks = activeTracks.map((track) => ({
       id: track.id,
       muted: track.muted,
@@ -236,6 +283,7 @@ function App() {
       {
         id: `preset-${crypto.randomUUID()}`,
         name,
+        category: category.trim() || "Custom",
         tracks: activePresetTracks,
       },
     ]);
@@ -268,16 +316,33 @@ function App() {
     setCustomPresets((currentPresets) =>
       mergePresets(currentPresets, importedPresets),
     );
+    setDeletedPresetIds((currentDeletedPresetIds) =>
+      currentDeletedPresetIds.filter(
+        (deletedPresetId) =>
+          !importedPresets.some((preset) => preset.id === deletedPresetId),
+      ),
+    );
+  };
+
+  const removePreset = (id: string) => {
+    setCustomPresets((currentPresets) =>
+      currentPresets.filter((preset) => preset.id !== id),
+    );
+    setDeletedPresetIds((currentDeletedPresetIds) =>
+      currentDeletedPresetIds.includes(id)
+        ? currentDeletedPresetIds
+        : [...currentDeletedPresetIds, id],
+    );
   };
 
   return (
-    <main className="mx-auto min-h-svh w-[min(880px,calc(100%-32px))] px-0 py-16 text-[#f8f7fb] max-[640px]:w-[min(100%-12px,880px)] max-[640px]:pt-8">
+    <main className="mx-auto min-h-svh w-[min(880px,calc(100%-32px))] px-0 py-16 text-[#f8f7fb] max-[640px]:w-[min(100%-16px,880px)] max-[640px]:pt-8 max-[420px]:w-[calc(100%-12px)]">
       <section
-        className="grid justify-items-center pb-16 text-center max-[640px]:pb-12"
+        className="grid justify-items-center pb-16 text-center max-[640px]:pb-10"
         aria-labelledby="app-title"
       >
         <h1
-          className="m-0 font-serif text-[clamp(2.2rem,7vw,4rem)] leading-none tracking-normal text-white [text-shadow:0_2px_0_rgba(72,46,31,0.85)]"
+          className="m-0 text-balance font-serif text-[clamp(2.2rem,7vw,4rem)] leading-none tracking-normal text-white [text-shadow:0_2px_0_rgba(72,46,31,0.85)] max-[420px]:text-[2.45rem]"
           id="app-title"
         >
           Ambient Mixer
@@ -285,7 +350,7 @@ function App() {
       </section>
 
       <aside
-        className="mb-6 -mt-7 overflow-hidden rounded-lg border border-[#9acae0]/20 bg-[linear-gradient(180deg,rgba(154,202,224,0.08),rgba(255,255,255,0.025)),rgba(18,20,25,0.88)] shadow-[0_24px_70px_rgba(0,0,0,0.36)]"
+        className="mb-6 -mt-7 overflow-hidden rounded-lg border border-[#9acae0]/20 bg-[linear-gradient(180deg,rgba(154,202,224,0.08),rgba(255,255,255,0.025)),rgba(18,20,25,0.88)] shadow-[0_24px_70px_rgba(0,0,0,0.36)] max-[640px]:-mt-4"
         aria-label="Mixer channels"
       >
         <div className="flex items-center justify-between gap-3.5 border-b border-white/10 px-4.5 py-4 text-[#a5a2ad]">
@@ -295,7 +360,7 @@ function App() {
           <span>{activeTracks.length} active</span>
         </div>
         {activeSounds.length > 0 ? (
-          <div className="grid grid-cols-[repeat(auto-fit,minmax(112px,1fr))] gap-2.5 p-2.5">
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(112px,1fr))] gap-2.5 p-2.5 max-[640px]:grid-cols-2 max-[420px]:grid-cols-1">
             {activeSounds.map((sound) => {
               const track = tracks.find(
                 (currentTrack) => currentTrack.id === sound.id,
@@ -346,9 +411,11 @@ function App() {
       <PresetManager
         activeCount={activeTracks.length}
         presets={presets}
+        presetCategories={presetCategories}
         onApplyPreset={applyPreset}
         onExportPresets={exportPresets}
         onImportPresets={importPresets}
+        onRemovePreset={removePreset}
         onSavePreset={savePreset}
       />
 
@@ -380,6 +447,7 @@ function App() {
         <SoundGrid
           sounds={selectedSounds}
           tracks={tracks}
+          maxActiveReached={activeTracks.length >= maxActiveTracks}
           onChangeVolume={(id, volume) => updateTrack(id, { volume })}
           onToggleSound={toggleSound}
         />

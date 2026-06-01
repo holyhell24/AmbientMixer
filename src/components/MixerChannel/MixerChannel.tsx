@@ -13,9 +13,9 @@ function MixerChannel({
   return (
     <section
       aria-label={`${sound.name} channel`}
-      className="grid min-h-[292px] grid-rows-[auto_1fr_auto] gap-3 border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.075),rgba(255,255,255,0.025)),rgba(12,14,18,0.82)] p-3 max-[520px]:min-h-[246px] max-[520px]:p-2.5"
+      className="grid min-h-[292px] grid-rows-[auto_1fr_auto] gap-3 border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.075),rgba(255,255,255,0.025)),rgba(12,14,18,0.82)] p-3 max-[520px]:min-h-[246px] max-[520px]:p-2.5 max-[420px]:grid-cols-[auto_1fr] max-[420px]:grid-rows-[auto_auto] max-[420px]:items-center"
     >
-      <div className="grid justify-items-center gap-2">
+      <div className="grid justify-items-center gap-2 max-[420px]:self-stretch">
         <span className="grid h-[38px] w-[38px] place-items-center rounded-full border border-white/15 bg-[radial-gradient(circle_at_35%_25%,rgba(154,202,224,0.28),transparent_56%),rgba(0,0,0,0.28)] text-[0.76rem] font-black text-white max-[520px]:h-8 max-[520px]:w-8 max-[520px]:text-[0.68rem]" aria-hidden="true">
           <SoundIcon name={sound.icon} />
         </span>
@@ -23,7 +23,7 @@ function MixerChannel({
           {sound.name}
         </span>
       </div>
-      <div className="grid min-h-[136px] grid-rows-[1fr_auto] justify-items-center gap-2 rounded-lg bg-black/15 px-0 pt-3 pb-2.5 max-[520px]:min-h-28">
+      <div className="grid min-h-[136px] grid-rows-[1fr_auto] justify-items-center gap-2 rounded-lg bg-black/15 px-0 pt-3 pb-2.5 max-[520px]:min-h-28 max-[420px]:min-h-[116px]">
         <input
           aria-label={`${sound.name} mixer volume`}
           className="h-[104px] w-6 cursor-pointer accent-[#d8773b] [direction:rtl] [writing-mode:vertical-lr] max-[520px]:h-[84px]"
@@ -35,7 +35,7 @@ function MixerChannel({
         />
         <span className="text-[0.72rem] font-black tracking-[0.08em] text-[#9acade]">{track.volume}%</span>
       </div>
-      <div className="grid grid-cols-3 gap-1.5">
+      <div className="grid grid-cols-3 gap-1.5 max-[420px]:col-span-2">
         <button
           aria-label={track.muted ? `Unmute ${sound.name}` : `Mute ${sound.name}`}
           className="inline-flex min-h-[34px] w-full items-center justify-center gap-1.5 rounded-full border border-white/10 bg-white/[0.055] text-[0.72rem] font-black text-[#f4efe7] hover:border-[#9acae0]/60 hover:bg-[#9acae0]/10 data-[active=true]:bg-[#ffb19a] data-[active=true]:text-[#101112]"

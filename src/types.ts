@@ -58,6 +58,7 @@ export type PresetTrack = {
 export type SoundPreset = {
   id: string;
   name: string;
+  category: string;
   tracks: PresetTrack[];
 };
 

@@ -9,9 +9,9 @@ function TransportControls({
   onTogglePlay,
 }: TransportControlsProps) {
   return (
-    <div className="flex items-center gap-2.5">
+    <div className="flex w-full items-center justify-center gap-2.5 max-[360px]:grid max-[360px]:grid-cols-[1fr_auto]">
       <button
-        className="inline-flex min-h-11 min-w-[146px] items-center justify-center gap-2 rounded-full border border-white/15 bg-[#fff9ef] px-4.5 font-black text-[#101112] disabled:cursor-not-allowed disabled:opacity-50"
+        className="inline-flex min-h-11 min-w-[146px] items-center justify-center gap-2 rounded-full border border-white/15 bg-[#fff9ef] px-4.5 font-black text-[#101112] disabled:cursor-not-allowed disabled:opacity-50 max-[360px]:min-w-0"
         disabled={activeCount === 0}
         onClick={onTogglePlay}
         type="button"

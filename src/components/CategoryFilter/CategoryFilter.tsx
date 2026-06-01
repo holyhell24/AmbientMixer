@@ -7,7 +7,7 @@ const categories = Object.values(SoundCategory);
 function CategoryFilter({ activeCategory, onSelectCategory }: CategoryFilterProps) {
   return (
     <div
-      className="grid w-full grid-cols-[repeat(auto-fit,minmax(132px,1fr))] gap-2.5 pt-0.5 pb-4 max-[560px]:grid-cols-2"
+      className="grid w-full grid-cols-[repeat(auto-fit,minmax(132px,1fr))] gap-2.5 pt-0.5 pb-4 max-[560px]:grid-cols-2 max-[360px]:grid-cols-1"
       aria-label="Sound categories"
       role="tablist"
     >

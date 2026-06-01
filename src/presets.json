@@ -3,6 +3,7 @@
     {
       "id": "preset-deep-focus",
       "name": "Deep Focus",
+      "category": "Focus",
       "tracks": [
         { "id": "river", "volume": 42, "muted": false },
         { "id": "wind-in-trees", "volume": 36, "muted": false },
@@ -12,6 +13,7 @@
     {
       "id": "preset-rainy-window",
       "name": "Rainy Window",
+      "category": "Rain",
       "tracks": [
         { "id": "light-rain", "volume": 62, "muted": false },
         { "id": "rain-window", "volume": 54, "muted": false },
@@ -21,6 +23,7 @@
     {
       "id": "preset-medieval-evening",
       "name": "Medieval Evening",
+      "category": "Medieval",
       "tracks": [
         { "id": "medieval-village", "volume": 58, "muted": false },
         { "id": "campfire", "volume": 40, "muted": false },

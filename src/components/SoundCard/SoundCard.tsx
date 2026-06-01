@@ -1,15 +1,23 @@
 import SoundIcon from '../SoundIcon';
 import type { SoundCardProps } from './types';
 
-function SoundCard({ sound, track, onChangeVolume, onToggleSound }: SoundCardProps) {
+function SoundCard({
+  disabled,
+  sound,
+  track,
+  onChangeVolume,
+  onToggleSound,
+}: SoundCardProps) {
   return (
     <article
-      className="min-h-36 rounded-lg border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.045),rgba(255,255,255,0.02)),rgba(5,6,7,0.45)] p-4 transition hover:-translate-y-0.5 data-[active=true]:border-[#fff9ef]/90 data-[active=true]:bg-[linear-gradient(180deg,rgba(158,210,200,0.13),rgba(220,119,59,0.06)),rgba(5,6,7,0.58)] max-[520px]:min-h-[132px] max-[520px]:p-2"
+      className="min-h-36 rounded-lg border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.045),rgba(255,255,255,0.02)),rgba(5,6,7,0.45)] p-4 transition hover:-translate-y-0.5 data-[active=true]:border-[#fff9ef]/90 data-[active=true]:bg-[linear-gradient(180deg,rgba(158,210,200,0.13),rgba(220,119,59,0.06)),rgba(5,6,7,0.58)] data-[disabled=true]:opacity-45 data-[disabled=true]:hover:translate-y-0 max-[520px]:min-h-[132px] max-[520px]:p-2 max-[360px]:min-h-0"
       data-active={track.active}
+      data-disabled={disabled}
     >
       <button
         aria-pressed={track.active}
-        className="grid w-full place-items-center gap-2.5 border-0 bg-transparent text-[#fff9ef] max-[520px]:gap-1.5"
+        className="grid w-full place-items-center gap-2.5 border-0 bg-transparent text-[#fff9ef] disabled:cursor-not-allowed max-[520px]:gap-1.5"
+        disabled={disabled}
         onClick={() => onToggleSound(sound)}
         type="button"
       >
