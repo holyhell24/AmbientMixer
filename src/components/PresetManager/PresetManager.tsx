@@ -17,6 +17,9 @@ function PresetManager({
   const [presetCategory, setPresetCategory] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const presetsByCategory = groupPresetsByCategory(presets);
+  const presetNames = presets
+    .map((preset) => preset.name)
+    .toSorted((firstName, secondName) => firstName.localeCompare(secondName));
 
   const handleSavePreset = () => {
     const trimmedName = presetName.trim();
@@ -71,11 +74,17 @@ function PresetManager({
         <input
           aria-label="Preset name"
           className="min-h-[42px] min-w-0 rounded-md border border-white/15 bg-black/20 px-3 text-[#f8f7fb]"
+          list="preset-names"
           onChange={(event) => setPresetName(event.target.value)}
           placeholder="Preset name"
           type="text"
           value={presetName}
         />
+        <datalist id="preset-names">
+          {presetNames.map((name) => (
+            <option key={name} value={name} />
+          ))}
+        </datalist>
         <input
           aria-label="Preset category"
           className="min-h-[42px] min-w-0 rounded-md border border-white/15 bg-black/20 px-3 text-[#f8f7fb]"

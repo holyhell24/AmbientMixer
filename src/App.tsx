@@ -21,6 +21,7 @@ import {
   getPresetCategories,
   maxActiveTracks,
   mergePresets,
+  normalizePreset,
   parseDeletedPresetIds,
   parseStoredPresets,
   removePresetById,
@@ -30,9 +31,12 @@ import {
   syncTrackAudio,
   toggleSoundTrack,
   updateTrackState,
+  type AudioGraph,
 } from "./utils";
 
-const builtInPresets = presetData.presets satisfies SoundPreset[];
+const builtInPresets = (presetData.presets satisfies SoundPreset[]).map(
+  normalizePreset,
+);
 
 function App() {
   const [selectedCategory, setSelectedCategory] = useState<SoundCategory>(
@@ -49,6 +53,8 @@ function App() {
     return parseDeletedPresetIds(localStorage.getItem(deletedPresetIdsStorageKey));
   });
   const audioRefs = useRef(new Map<string, HTMLAudioElement>());
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const audioGraphRefs = useRef(new Map<string, AudioGraph>());
   const randomReplayTimeoutRefs = useRef(new Map<string, number>());
 
   const soundById = useMemo(
@@ -68,7 +74,12 @@ function App() {
   const presetCategories = getPresetCategories(presets);
 
   useEffect(() => {
+    const audioContext = audioContextRef.current ?? new AudioContext();
+    audioContextRef.current = audioContext;
+
     syncTrackAudio({
+      audioContext,
+      audioGraphs: audioGraphRefs.current,
       audioRefs: audioRefs.current,
       isPlaying,
       masterMuted,
@@ -126,13 +137,23 @@ function App() {
   };
 
   const savePreset = (name: string, category: string) => {
-    const preset = createPreset(name, category, activeTracks);
+    const existingPreset = presets.find(
+      (preset) => preset.name.toLowerCase() === name.toLowerCase(),
+    );
+    const preset = createPreset(name, category, activeTracks, existingPreset);
 
     if (!preset) {
       return;
     }
 
-    setCustomPresets((currentPresets) => [...currentPresets, preset]);
+    setCustomPresets((currentPresets) =>
+      mergePresets(currentPresets, [preset]),
+    );
+    setDeletedPresetIds((currentDeletedPresetIds) =>
+      currentDeletedPresetIds.filter(
+        (deletedPresetId) => deletedPresetId !== preset.id,
+      ),
+    );
   };
 
   const exportPresets = () => {
@@ -209,6 +230,8 @@ function App() {
                   key={sound.id}
                   sound={sound}
                   track={track}
+                  onChangeEqualizer={(eq) => updateTrack(sound.id, { eq })}
+                  onChangePan={(pan) => updateTrack(sound.id, { pan })}
                   onChangeVolume={(volume) => updateTrack(sound.id, { volume })}
                   onToggleActive={() =>
                     updateTrack(sound.id, { active: !track.active })

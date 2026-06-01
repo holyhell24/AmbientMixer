@@ -43,16 +43,26 @@ export type Sound = {
 export type TrackState = {
   id: string;
   active: boolean;
+  eq: EqualizerSettings;
   muted: boolean;
+  pan: number;
   randomize: boolean;
   volume: number;
 };
 
 export type PresetTrack = {
   id: string;
+  eq?: EqualizerSettings;
   muted: boolean;
+  pan?: number;
   randomize?: boolean;
   volume: number;
+};
+
+export type EqualizerSettings = {
+  high: number;
+  low: number;
+  mid: number;
 };
 
 export type SoundPreset = {

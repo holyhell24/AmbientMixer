@@ -5,6 +5,8 @@ import type { MixerChannelProps } from './types';
 function MixerChannel({
   sound,
   track,
+  onChangeEqualizer,
+  onChangePan,
   onChangeVolume,
   onToggleActive,
   onToggleMute,
@@ -34,6 +36,54 @@ function MixerChannel({
           value={track.volume}
         />
         <span className="text-[0.72rem] font-black tracking-[0.08em] text-[#9acade]">{track.volume}%</span>
+      </div>
+      <div className="grid gap-2 rounded-lg bg-black/15 px-2 py-2">
+        <label className="grid gap-1 text-[0.62rem] font-black tracking-[0.08em] text-[#aaa69f] uppercase">
+          <span className="flex justify-between gap-2">
+            <span>Pan</span>
+            <span className="text-[#9acade]">{track.pan}</span>
+          </span>
+          <input
+            aria-label={`${sound.name} panning`}
+            className="w-full accent-[#d8773b]"
+            max="100"
+            min="-100"
+            onChange={(event) => onChangePan(Number(event.target.value))}
+            type="range"
+            value={track.pan}
+          />
+        </label>
+        <div className="grid grid-cols-3 gap-1.5">
+          {[
+            ['low', 'Low'],
+            ['mid', 'Mid'],
+            ['high', 'High'],
+          ].map(([band, label]) => (
+            <label
+              className="grid justify-items-center gap-1 text-[0.58rem] font-black tracking-[0.04em] text-[#aaa69f] uppercase"
+              key={band}
+            >
+              <span>{label}</span>
+              <input
+                aria-label={`${sound.name} ${label} equalizer`}
+                className="h-[58px] w-5 cursor-pointer accent-[#d8773b] [direction:rtl] [writing-mode:vertical-lr]"
+                max="12"
+                min="-12"
+                onChange={(event) =>
+                  onChangeEqualizer({
+                    ...track.eq,
+                    [band]: Number(event.target.value),
+                  })
+                }
+                type="range"
+                value={track.eq[band as keyof typeof track.eq]}
+              />
+              <span className="text-[0.56rem] text-[#9acade]">
+                {track.eq[band as keyof typeof track.eq]}
+              </span>
+            </label>
+          ))}
+        </div>
       </div>
       <div className="grid grid-cols-3 gap-1.5">
         <button

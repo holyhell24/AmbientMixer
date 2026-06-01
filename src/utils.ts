@@ -1,15 +1,48 @@
 import { sounds } from './soundLibrary';
-import type { PresetFile, Sound, SoundPreset, TrackState } from './types';
+import type {
+  EqualizerSettings,
+  PresetFile,
+  Sound,
+  SoundPreset,
+  TrackState,
+} from './types';
 
 export const customPresetStorageKey = 'ambient-mixer-presets';
 export const deletedPresetIdsStorageKey = 'ambient-mixer-deleted-preset-ids';
 export const maxActiveTracks = 6;
+export const defaultEqualizerSettings: EqualizerSettings = {
+  high: 0,
+  low: 0,
+  mid: 0,
+};
+
+export type AudioGraph = {
+  gain: GainNode;
+  high: BiquadFilterNode;
+  low: BiquadFilterNode;
+  mid: BiquadFilterNode;
+  panner: StereoPannerNode;
+  source: MediaElementAudioSourceNode;
+};
+
+const clamp = (value: number, min: number, max: number) =>
+  Math.min(max, Math.max(min, value));
+
+const normalizeEqualizerSettings = (
+  equalizerSettings: EqualizerSettings | undefined,
+) => ({
+  high: clamp(Number(equalizerSettings?.high) || 0, -12, 12),
+  low: clamp(Number(equalizerSettings?.low) || 0, -12, 12),
+  mid: clamp(Number(equalizerSettings?.mid) || 0, -12, 12),
+});
 
 export const createInitialTracks = (): TrackState[] =>
   sounds.map((sound, index) => ({
     id: sound.id,
     active: index < 3,
+    eq: defaultEqualizerSettings,
     muted: false,
+    pan: 0,
     randomize: false,
     volume: index < 3 ? 58 : 42,
   }));
@@ -22,9 +55,11 @@ export const normalizePreset = (preset: SoundPreset): SoundPreset => ({
     .filter((track) => sounds.some((sound) => sound.id === track.id))
     .map((track) => ({
       id: track.id,
+      eq: normalizeEqualizerSettings(track.eq),
       muted: Boolean(track.muted),
+      pan: clamp(Number(track.pan) || 0, -100, 100),
       randomize: Boolean(track.randomize),
-      volume: Math.min(100, Math.max(0, Number(track.volume) || 0)),
+      volume: clamp(Number(track.volume) || 0, 0, 100),
     })),
 });
 
@@ -122,7 +157,9 @@ export const resetTracks = (tracks: TrackState[]) =>
   tracks.map((track) => ({
     ...track,
     active: false,
+    eq: defaultEqualizerSettings,
     muted: false,
+    pan: 0,
     randomize: false,
     volume: 50,
   }));
@@ -146,7 +183,9 @@ export const applyPresetToTracks = (
     return {
       ...track,
       active: true,
+      eq: normalizeEqualizerSettings(presetTrack.eq),
       muted: presetTrack.muted,
+      pan: clamp(Number(presetTrack.pan) || 0, -100, 100),
       randomize: Boolean(presetTrack.randomize),
       volume: presetTrack.volume,
     };
@@ -157,10 +196,13 @@ export const createPreset = (
   name: string,
   category: string,
   activeTracks: TrackState[],
+  existingPreset?: SoundPreset,
 ): SoundPreset | null => {
   const activePresetTracks = activeTracks.map((track) => ({
+    eq: track.eq,
     id: track.id,
     muted: track.muted,
+    pan: track.pan,
     randomize: track.randomize,
     volume: track.volume,
   }));
@@ -170,9 +212,9 @@ export const createPreset = (
   }
 
   return {
-    id: `preset-${crypto.randomUUID()}`,
+    id: existingPreset?.id ?? `preset-${crypto.randomUUID()}`,
     name,
-    category: category.trim() || 'Custom',
+    category: category.trim() || existingPreset?.category || 'Custom',
     tracks: activePresetTracks,
   };
 };
@@ -203,7 +245,7 @@ export const restoreImportedPresetIds = (
   );
 
 export const downloadPresetFile = (presets: SoundPreset[]) => {
-  const presetFile: PresetFile = { presets };
+  const presetFile: PresetFile = { presets: presets.map(normalizePreset) };
   const blob = new Blob([JSON.stringify(presetFile, null, 2)], {
     type: 'application/json',
   });
@@ -234,6 +276,54 @@ export const getAudio = (
   return audio;
 };
 
+export const getAudioGraph = (
+  audio: HTMLAudioElement,
+  audioContext: AudioContext,
+  audioGraphs: Map<string, AudioGraph>,
+  soundId: string,
+) => {
+  const existingAudioGraph = audioGraphs.get(soundId);
+
+  if (existingAudioGraph) {
+    return existingAudioGraph;
+  }
+
+  const source = audioContext.createMediaElementSource(audio);
+  const low = audioContext.createBiquadFilter();
+  const mid = audioContext.createBiquadFilter();
+  const high = audioContext.createBiquadFilter();
+  const panner = audioContext.createStereoPanner();
+  const gain = audioContext.createGain();
+
+  low.type = 'lowshelf';
+  low.frequency.value = 320;
+  mid.type = 'peaking';
+  mid.frequency.value = 1200;
+  mid.Q.value = 0.8;
+  high.type = 'highshelf';
+  high.frequency.value = 3200;
+
+  source.connect(low);
+  low.connect(mid);
+  mid.connect(high);
+  high.connect(panner);
+  panner.connect(gain);
+  gain.connect(audioContext.destination);
+
+  const audioGraph = {
+    gain,
+    high,
+    low,
+    mid,
+    panner,
+    source,
+  };
+
+  audioGraphs.set(soundId, audioGraph);
+
+  return audioGraph;
+};
+
 export const clearRandomReplayTimeouts = (
   randomReplayTimeoutRefs: Map<string, number>,
 ) => {
@@ -245,6 +335,8 @@ export const clearRandomReplayTimeouts = (
 
 export const syncTrackAudio = ({
   audioRefs,
+  audioContext,
+  audioGraphs,
   isPlaying,
   masterMuted,
   masterVolume,
@@ -253,6 +345,8 @@ export const syncTrackAudio = ({
   tracks,
 }: {
   audioRefs: Map<string, HTMLAudioElement>;
+  audioContext: AudioContext;
+  audioGraphs: Map<string, AudioGraph>;
   isPlaying: boolean;
   masterMuted: boolean;
   masterVolume: number;
@@ -270,13 +364,22 @@ export const syncTrackAudio = ({
     }
 
     const audio = getAudio(sound, audioRefs);
+    const audioGraph = getAudioGraph(audio, audioContext, audioGraphs, track.id);
+
     audio.onended = null;
     audio.loop = !track.randomize;
-    audio.volume = track.muted || masterMuted
+    audio.volume = 1;
+    audioGraph.gain.gain.value = track.muted || masterMuted
       ? 0
       : (track.volume / 100) * (masterVolume / 100);
+    audioGraph.low.gain.value = track.eq.low;
+    audioGraph.mid.gain.value = track.eq.mid;
+    audioGraph.high.gain.value = track.eq.high;
+    audioGraph.panner.pan.value = track.pan / 100;
 
     if (isPlaying && track.active) {
+      void audioContext.resume();
+
       if (track.randomize) {
         audio.onended = () => {
           const delay = Math.floor(5000 + Math.random() * 5000);
