@@ -48,16 +48,16 @@ function PresetManager({
 
   return (
     <section
-      className="my-[18px] mb-[34px] grid gap-3.5 rounded-lg border border-[#9acae0]/20 bg-[linear-gradient(180deg,rgba(154,202,224,0.08),rgba(255,255,255,0.025)),rgba(18,20,25,0.88)] p-4 shadow-[0_24px_70px_rgba(0,0,0,0.36)] max-[560px]:p-3"
+      className="my-[18px] mb-[34px] grid gap-3.5 rounded-lg border border-[color-mix(in_srgb,var(--theme-glow)_22%,transparent)] bg-[linear-gradient(180deg,color-mix(in_srgb,var(--theme-glow)_8%,transparent),rgba(255,255,255,0.025)),rgba(18,20,25,0.88)] p-4 shadow-[0_24px_70px_rgba(0,0,0,0.36)] max-[560px]:p-3"
       aria-label="Sound presets"
     >
       <div className="flex flex-wrap items-center justify-between gap-2.5 max-[560px]:grid max-[560px]:grid-cols-1">
         <h2 className="m-0 font-serif text-[1.4rem] tracking-normal text-white max-[560px]:text-center">Presets</h2>
         <div className="grid grid-cols-2 items-center gap-2.5 max-[560px]:w-full">
-          <button className="min-h-[42px] whitespace-nowrap rounded-md border border-white/15 bg-white/[0.06] px-3 font-black text-[#f8f7fb] hover:border-[#9acae0]/70 hover:bg-[#9acae0]/10" onClick={onExportPresets} type="button">
+          <button className="min-h-[42px] whitespace-nowrap rounded-md border border-white/15 bg-white/[0.06] px-3 font-black text-[#f8f7fb] hover:border-[var(--theme-ring)] hover:bg-[color-mix(in_srgb,var(--theme-ring)_10%,transparent)]" onClick={onExportPresets} type="button">
             Export
           </button>
-          <button className="min-h-[42px] whitespace-nowrap rounded-md border border-white/15 bg-white/[0.06] px-3 font-black text-[#f8f7fb] hover:border-[#9acae0]/70 hover:bg-[#9acae0]/10" onClick={() => fileInputRef.current?.click()} type="button">
+          <button className="min-h-[42px] whitespace-nowrap rounded-md border border-white/15 bg-white/[0.06] px-3 font-black text-[#f8f7fb] hover:border-[var(--theme-ring)] hover:bg-[color-mix(in_srgb,var(--theme-ring)_10%,transparent)]" onClick={() => fileInputRef.current?.click()} type="button">
             Import
           </button>
           <input
@@ -99,7 +99,7 @@ function PresetManager({
             <option key={category} value={category} />
           ))}
         </datalist>
-        <button className="min-h-[42px] whitespace-nowrap rounded-md border border-white/15 bg-white/[0.06] px-3 font-black text-[#f8f7fb] hover:border-[#9acae0]/70 hover:bg-[#9acae0]/10 disabled:cursor-not-allowed disabled:opacity-40" disabled={activeCount === 0 || presetName.trim().length === 0} onClick={handleSavePreset} type="button">
+        <button className="min-h-[42px] whitespace-nowrap rounded-md border border-white/15 bg-white/[0.06] px-3 font-black text-[#f8f7fb] hover:border-[var(--theme-ring)] hover:bg-[color-mix(in_srgb,var(--theme-ring)_10%,transparent)] disabled:cursor-not-allowed disabled:opacity-40" disabled={activeCount === 0 || presetName.trim().length === 0} onClick={handleSavePreset} type="button">
           Save Mix
         </button>
       </div>
@@ -119,14 +119,14 @@ function PresetManager({
                 />
                 <span className="truncate">{category}</span>
               </span>
-              <span className="shrink-0 text-xs font-bold text-[#9acade]">
+              <span className="shrink-0 text-xs font-bold text-[var(--theme-glow)]">
                 {categoryPresets.length} presets
               </span>
             </summary>
             <div className="mt-2.5 flex flex-wrap gap-2.5 max-[520px]:justify-center">
               {categoryPresets.map((preset) => (
                 <div
-                  className="grid h-[72px] w-[210px] grid-cols-[1fr_32px] items-center gap-2 rounded-md border border-white/15 bg-white/[0.06] px-3 py-2.5 text-[#f8f7fb] hover:border-[#9acae0]/70 hover:bg-[#9acae0]/10 max-[520px]:w-[min(210px,100%)]"
+                  className="grid h-[72px] w-[210px] grid-cols-[1fr_32px] items-center gap-2 rounded-md border border-white/15 bg-white/[0.06] px-3 py-2.5 text-[#f8f7fb] hover:border-[var(--theme-ring)] hover:bg-[color-mix(in_srgb,var(--theme-ring)_10%,transparent)] max-[520px]:w-[min(210px,100%)]"
                   key={preset.id}
                 >
                   <button
@@ -141,7 +141,7 @@ function PresetManager({
                   </button>
                   <button
                     aria-label={`Remove ${preset.name}`}
-                    className="flex h-8 w-8 items-center justify-center self-center justify-self-center rounded-full border border-white/10 bg-black/20 p-0 text-[#b9b4c1] hover:border-[#ffb19a]/70 hover:text-[#ffb19a]"
+                    className="flex h-8 w-8 items-center justify-center self-center justify-self-center rounded-full border border-white/10 bg-black/20 p-0 text-[#b9b4c1] hover:border-[var(--theme-active)] hover:text-[var(--theme-active)]"
                     onClick={() => onRemovePreset(preset.id)}
                     title="Remove preset"
                     type="button"

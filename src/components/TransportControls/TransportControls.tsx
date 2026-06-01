@@ -41,7 +41,7 @@ function TransportControls({
       <div className="flex min-h-11 w-[min(100%,320px)] items-center gap-2.5 rounded-full border border-white/15 bg-white/[0.06] px-3.5 text-[#f7f0e4] max-[520px]:col-span-2">
         <button
           aria-label={masterMuted ? "Unmute all sounds" : "Mute all sounds"}
-          className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-white/10 bg-black/20 text-[#f7f0e4] data-[active=true]:bg-[#ffb19a] data-[active=true]:text-[#101112]"
+          className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-white/10 bg-black/20 text-[#f7f0e4] data-[active=true]:bg-[var(--theme-active)] data-[active=true]:text-[var(--theme-active-text)]"
           data-active={masterMuted}
           onClick={onToggleMasterMute}
           title={masterMuted ? "Unmute all" : "Mute all"}
@@ -56,11 +56,11 @@ function TransportControls({
         <label className="grid min-w-0 flex-1 gap-1 text-[0.68rem] font-black tracking-[0.08em] text-[#aaa69f] uppercase">
           <span className="flex items-center justify-between gap-2">
             <span>Volume</span>
-            <span className="text-[#9acade]">{masterMuted ? 0 : masterVolume}%</span>
+            <span className="text-[var(--theme-glow)]">{masterMuted ? 0 : masterVolume}%</span>
           </span>
           <input
             aria-label="Master volume"
-            className="w-full accent-[#d8773b]"
+            className="w-full accent-[var(--theme-accent)]"
             max="100"
             min="0"
             onChange={(event) => onChangeMasterVolume(Number(event.target.value))}

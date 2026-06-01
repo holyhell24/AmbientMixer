@@ -14,7 +14,7 @@ function CategoryFilter({ activeCategory, onSelectCategory }: CategoryFilterProp
       {categories.map((category) => (
         <button
           aria-selected={activeCategory === category}
-          className="inline-flex min-h-[42px] items-center justify-center rounded-full border border-white/15 bg-white/[0.045] px-3.5 text-[#d9d2c7] transition hover:-translate-y-px hover:border-[#9ed2c8]/80 hover:bg-[#9ed2c8]/15 hover:text-white aria-selected:border-[#9ed2c8]/80 aria-selected:bg-[#9ed2c8]/15 aria-selected:text-white max-[560px]:shrink-0"
+          className="inline-flex min-h-[42px] items-center justify-center rounded-full border border-white/15 bg-white/[0.045] px-3.5 text-[#d9d2c7] transition hover:-translate-y-px hover:border-[var(--theme-ring)] hover:bg-[color-mix(in_srgb,var(--theme-ring)_15%,transparent)] hover:text-white aria-selected:border-[var(--theme-ring)] aria-selected:bg-[color-mix(in_srgb,var(--theme-ring)_15%,transparent)] aria-selected:text-white max-[560px]:shrink-0"
           key={category}
           onClick={() => onSelectCategory(category)}
           role="tab"

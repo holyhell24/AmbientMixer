@@ -75,3 +75,15 @@ export type SoundPreset = {
 export type PresetFile = {
   presets: SoundPreset[];
 };
+
+export type ColorPreset = {
+  id: string;
+  name: string;
+  warm: string;
+  cool: string;
+  accent: string;
+  active: string;
+  activeText: string;
+  ring: string;
+  glow: string;
+};

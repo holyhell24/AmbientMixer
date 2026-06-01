@@ -35,7 +35,7 @@ function MixerChannel({
       <div className="grid min-h-[136px] grid-rows-[1fr_auto] justify-items-center gap-2 rounded-lg bg-black/15 px-0 pt-3 pb-2.5 max-[520px]:min-h-28 max-[360px]:min-h-[104px]">
         <input
           aria-label={`${sound.name} mixer volume`}
-          className="h-[104px] w-6 cursor-pointer accent-[#d8773b] [direction:rtl] [writing-mode:vertical-lr] max-[520px]:h-[84px] max-[360px]:h-[76px]"
+          className="h-[104px] w-6 cursor-pointer accent-[var(--theme-accent)] [direction:rtl] [writing-mode:vertical-lr] max-[520px]:h-[84px] max-[360px]:h-[76px]"
           max="100"
           min="0"
           onChange={(event) => onChangeVolume(Number(event.target.value))}
@@ -43,17 +43,17 @@ function MixerChannel({
           type="range"
           value={track.volume}
         />
-        <span className="text-[0.72rem] font-black tracking-[0.08em] text-[#9acade]">{track.volume}%</span>
+        <span className="text-[0.72rem] font-black tracking-[0.08em] text-[var(--theme-glow)]">{track.volume}%</span>
       </div>
       <div className="grid gap-2 rounded-lg bg-black/15 px-2 py-2">
         <label className="grid gap-1 text-[0.62rem] font-black tracking-[0.08em] text-[#aaa69f] uppercase">
           <span className="flex justify-between gap-2">
             <span>Pan</span>
-            <span className="text-[#9acade]">{track.pan}</span>
+            <span className="text-[var(--theme-glow)]">{track.pan}</span>
           </span>
           <input
             aria-label={`${sound.name} panning`}
-            className="w-full accent-[#d8773b]"
+            className="w-full accent-[var(--theme-accent)]"
             max="100"
             min="-100"
             onChange={(event) => onChangePan(Number(event.target.value))}
@@ -71,7 +71,7 @@ function MixerChannel({
               <span>{label}</span>
               <input
                 aria-label={`${sound.name} ${label} equalizer`}
-                className="h-[58px] w-5 cursor-pointer accent-[#d8773b] [direction:rtl] [writing-mode:vertical-lr]"
+                className="h-[58px] w-5 cursor-pointer accent-[var(--theme-accent)] [direction:rtl] [writing-mode:vertical-lr]"
                 max="12"
                 min="-12"
                 onChange={(event) =>
@@ -89,7 +89,7 @@ function MixerChannel({
                 type="range"
                 value={track.eq[band]}
               />
-              <span className="text-[0.56rem] text-[#9acade]">
+              <span className="text-[0.56rem] text-[var(--theme-glow)]">
                 {track.eq[band]}
               </span>
             </label>
@@ -99,7 +99,7 @@ function MixerChannel({
       <div className="grid grid-cols-3 gap-1.5">
         <button
           aria-label={track.muted ? `Unmute ${sound.name}` : `Mute ${sound.name}`}
-          className="inline-flex min-h-[34px] w-full items-center justify-center gap-1.5 rounded-full border border-white/10 bg-white/[0.055] text-[0.72rem] font-black text-[#f4efe7] hover:border-[#9acae0]/60 hover:bg-[#9acae0]/10 data-[active=true]:bg-[#ffb19a] data-[active=true]:text-[#101112]"
+          className="inline-flex min-h-[34px] w-full items-center justify-center gap-1.5 rounded-full border border-white/10 bg-white/[0.055] text-[0.72rem] font-black text-[#f4efe7] hover:border-[var(--theme-ring)] hover:bg-[color-mix(in_srgb,var(--theme-ring)_10%,transparent)] data-[active=true]:bg-[var(--theme-active)] data-[active=true]:text-[var(--theme-active-text)]"
           data-active={track.muted}
           onClick={onToggleMute}
           title={track.muted ? 'Unmute' : 'Mute'}
@@ -109,7 +109,7 @@ function MixerChannel({
         </button>
         <button
           aria-label={`${track.randomize ? 'Disable' : 'Enable'} random replay delay for ${sound.name}`}
-          className="inline-flex min-h-[34px] w-full items-center justify-center gap-1.5 rounded-full border border-white/10 bg-white/[0.055] text-[0.72rem] font-black text-[#f4efe7] hover:border-[#9acae0]/60 hover:bg-[#9acae0]/10 data-[active=true]:bg-[#ffb19a] data-[active=true]:text-[#101112]"
+          className="inline-flex min-h-[34px] w-full items-center justify-center gap-1.5 rounded-full border border-white/10 bg-white/[0.055] text-[0.72rem] font-black text-[#f4efe7] hover:border-[var(--theme-ring)] hover:bg-[color-mix(in_srgb,var(--theme-ring)_10%,transparent)] data-[active=true]:bg-[var(--theme-active)] data-[active=true]:text-[var(--theme-active-text)]"
           data-active={track.randomize}
           onClick={onToggleRandomize}
           title={track.randomize ? 'Disable random delay' : 'Enable random delay'}
@@ -119,7 +119,7 @@ function MixerChannel({
         </button>
         <button
           aria-label={`Remove ${sound.name}`}
-          className="inline-flex min-h-[34px] w-full items-center justify-center gap-1.5 rounded-full border border-white/10 bg-white/[0.055] text-[0.72rem] font-black text-[#b9b4c1] hover:border-[#9acae0]/60 hover:bg-[#9acae0]/10"
+          className="inline-flex min-h-[34px] w-full items-center justify-center gap-1.5 rounded-full border border-white/10 bg-white/[0.055] text-[0.72rem] font-black text-[#b9b4c1] hover:border-[var(--theme-ring)] hover:bg-[color-mix(in_srgb,var(--theme-ring)_10%,transparent)]"
           onClick={onToggleActive}
           title="Remove"
           type="button"

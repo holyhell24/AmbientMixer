@@ -9,7 +9,7 @@ function SoundCard({
 }: SoundCardProps) {
   return (
     <article
-      className="min-h-32 rounded-lg border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.045),rgba(255,255,255,0.02)),rgba(5,6,7,0.45)] p-4 transition hover:-translate-y-0.5 data-[active=true]:border-[#fff9ef]/90 data-[active=true]:bg-[linear-gradient(180deg,rgba(158,210,200,0.13),rgba(220,119,59,0.06)),rgba(5,6,7,0.58)] data-[disabled=true]:opacity-45 data-[disabled=true]:hover:translate-y-0 max-[520px]:min-h-[112px] max-[520px]:p-2 max-[360px]:min-h-0"
+      className="min-h-32 rounded-lg border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.045),rgba(255,255,255,0.02)),rgba(5,6,7,0.45)] p-4 transition hover:-translate-y-0.5 data-[active=true]:border-[var(--theme-active)] data-[active=true]:bg-[linear-gradient(180deg,color-mix(in_srgb,var(--theme-ring)_13%,transparent),color-mix(in_srgb,var(--theme-accent)_7%,transparent)),rgba(5,6,7,0.58)] data-[disabled=true]:opacity-45 data-[disabled=true]:hover:translate-y-0 max-[520px]:min-h-[112px] max-[520px]:p-2 max-[360px]:min-h-0"
       data-active={track.active}
       data-disabled={disabled}
     >

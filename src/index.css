@@ -4,6 +4,13 @@
   :root {
     color: #f8f7fb;
     background: #07080b;
+    --theme-warm: 216, 119, 59;
+    --theme-cool: 64, 128, 116;
+    --theme-accent: #d8773b;
+    --theme-active: #ffb19a;
+    --theme-active-text: #101112;
+    --theme-ring: #9ed2c8;
+    --theme-glow: #9acade;
     font-family:
       Inter,
       ui-sans-serif,
@@ -29,12 +36,12 @@
     background:
       radial-gradient(
         circle,
-        rgba(216, 119, 59, 0.22),
+        rgba(var(--theme-warm), 0.22),
         transparent 26rem
       ),
       radial-gradient(
         circle,
-        rgba(64, 128, 116, 0.2),
+        rgba(var(--theme-cool), 0.2),
         transparent 24rem
       ),
       linear-gradient(145deg, #120d0a 0%, #091013 45%, #07080b 100%);
