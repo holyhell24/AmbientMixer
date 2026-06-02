@@ -15,13 +15,13 @@ import {
   FiVolume2,
   FiWind,
   FiZap,
-} from 'react-icons/fi';
-import { GiBubbles, GiCampfire, GiCastle, GiWaterfall } from 'react-icons/gi';
-import type { IconType } from 'react-icons';
-import { SoundIconName } from '../../types';
-import type { SoundIconProps } from './types';
+} from "react-icons/fi";
+import { GiBubbles, GiCampfire, GiCastle, GiWaterfall } from "react-icons/gi";
+import type { IconType } from "react-icons";
+import { SoundIconName } from "../../types";
+import type { SoundIconProps } from "./types";
 
-const soundIcons: Record<SoundIconName, IconType> = {
+const SOUND_ICONS: Record<SoundIconName, IconType> = {
   [SoundIconName.Air]: FiWind,
   [SoundIconName.Bell]: FiBell,
   [SoundIconName.Bolt]: FiZap,
@@ -45,10 +45,10 @@ const soundIcons: Record<SoundIconName, IconType> = {
   [SoundIconName.Wild]: FiActivity,
 };
 
-function SoundIcon({ name }: SoundIconProps) {
-  const Icon = soundIcons[name];
+const SoundIcon = ({ name }: SoundIconProps) => {
+  const Icon = SOUND_ICONS[name];
 
   return <Icon aria-hidden="true" className="block h-[1.08em] w-[1.08em]" />;
-}
+};
 
 export default SoundIcon;

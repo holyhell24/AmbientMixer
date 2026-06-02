@@ -3,7 +3,7 @@ import { FiChevronDown, FiX } from 'react-icons/fi';
 import type { PresetManagerProps } from './types';
 import { groupPresetsByCategory, readPresetFile } from './utils';
 
-function PresetManager({
+const PresetManager = ({
   activeCount,
   presets,
   presetCategories,
@@ -12,7 +12,7 @@ function PresetManager({
   onImportPresets,
   onRemovePreset,
   onSavePreset,
-}: PresetManagerProps) {
+}: PresetManagerProps) => {
   const [presetName, setPresetName] = useState('');
   const [presetCategory, setPresetCategory] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -156,6 +156,6 @@ function PresetManager({
       </div>
     </section>
   );
-}
+};
 
 export default PresetManager;

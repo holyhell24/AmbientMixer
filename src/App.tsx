@@ -45,7 +45,7 @@ const builtInPresets = (presetData.presets satisfies SoundPreset[]).map(
   normalizePreset,
 );
 
-function App() {
+const App = () => {
   const [selectedCategory, setSelectedCategory] = useState<SoundCategory>(
     SoundCategory.Nature,
   );
@@ -335,6 +335,6 @@ function App() {
       </main>
     </>
   );
-}
+};
 
 export default App;
