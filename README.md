@@ -2,6 +2,8 @@
 
 Ambient Mixer is a React, TypeScript, and Tailwind web app for creating layered ambient soundscapes. Pick sounds from themed categories, build a small live mixer, tune each track, and save the result as reusable presets.
 
+This is a fully vibecoded project.
+
 ## Features
 
 - Mix up to 6 ambient sounds at once.
