@@ -19,7 +19,7 @@ import {
   FiWind,
   FiZap,
 } from "react-icons/fi";
-import { GiBee, GiBubbles, GiCampfire, GiCastle, GiFrog, GiHorseHead, GiPawPrint, GiWaterfall, GiWhale } from "react-icons/gi";
+import { GiBee, GiBubbles, GiCampfire, GiCastle, GiFrog, GiHorseHead, GiPawPrint, GiWaterfall, GiWhaleTail } from "react-icons/gi";
 import type { IconType } from "react-icons";
 import { SoundIconName } from "../../types";
 import type { SoundIconProps } from "./types";
@@ -32,7 +32,7 @@ const SOUND_ICONS: Record<SoundIconName, IconType> = {
   [SoundIconName.Frog]: GiFrog,
   [SoundIconName.Horse]: GiHorseHead,
   [SoundIconName.Paper]: FiFileText,
-  [SoundIconName.Whale]: GiWhale,
+  [SoundIconName.Whale]: GiWhaleTail,
   [SoundIconName.Air]: FiWind,
   [SoundIconName.Bell]: FiBell,
   [SoundIconName.Bolt]: FiZap,
