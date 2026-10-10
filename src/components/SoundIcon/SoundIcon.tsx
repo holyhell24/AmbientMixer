@@ -1,5 +1,8 @@
 import {
   FiActivity,
+  FiFeather,
+  FiFileText,
+  FiThermometer,
   FiBell,
   FiBookOpen,
   FiCloudRain,
@@ -16,12 +19,20 @@ import {
   FiWind,
   FiZap,
 } from "react-icons/fi";
-import { GiBubbles, GiCampfire, GiCastle, GiWaterfall } from "react-icons/gi";
+import { GiBee, GiBubbles, GiCampfire, GiCastle, GiFrog, GiHorseHead, GiPawPrint, GiWaterfall, GiWhale } from "react-icons/gi";
 import type { IconType } from "react-icons";
 import { SoundIconName } from "../../types";
 import type { SoundIconProps } from "./types";
 
 const SOUND_ICONS: Record<SoundIconName, IconType> = {
+  [SoundIconName.Animal]: GiPawPrint,
+  [SoundIconName.Bee]: GiBee,
+  [SoundIconName.Bird]: FiFeather,
+  [SoundIconName.BoilingWater]: FiThermometer,
+  [SoundIconName.Frog]: GiFrog,
+  [SoundIconName.Horse]: GiHorseHead,
+  [SoundIconName.Paper]: FiFileText,
+  [SoundIconName.Whale]: GiWhale,
   [SoundIconName.Air]: FiWind,
   [SoundIconName.Bell]: FiBell,
   [SoundIconName.Bolt]: FiZap,

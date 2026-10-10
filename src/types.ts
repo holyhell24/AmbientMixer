@@ -9,6 +9,14 @@ export enum SoundCategory {
 }
 
 export enum SoundIconName {
+  Animal = 'animal',
+  Bee = 'bee',
+  Bird = 'bird',
+  BoilingWater = 'boiling-water',
+  Frog = 'frog',
+  Horse = 'horse',
+  Paper = 'paper',
+  Whale = 'whale',
   Air = 'air',
   Bell = 'bell',
   Bolt = 'bolt',
